@@ -1022,9 +1022,7 @@
                 <button class="notes-close" id="closeNotes">✕</button>
             </div>
             <div class="notes-messages" id="notesList">
-                <div class="note-message system-message">
-                    Cargando notas... (Si tarda, verifica la configuración)
-                </div>
+                <!-- Notes will appear here -->
             </div>
             <div class="notes-input-area">
                 <input type="text" id="noteInput" placeholder="Escribe algo bonito..." autocomplete="off">
@@ -1155,7 +1153,6 @@
 
             el.innerHTML = `
                 <div class="note-text">${escapeHtml(data.text)}</div>
-                <div class="note-time">${timeStr}</div>
             `;
 
             // Remove "System Message" if it exists
