@@ -1087,80 +1087,27 @@
             notesList.scrollTop = notesList.scrollHeight;
         }
 
-        // Send Note
-        function sendNote() {
-            const text = noteInput.value.trim();
-            if (!text) return;
-            if (!database) {
-                alert("¡Falta configurar Firebase! Revisa el código.");
-                return;
-            }
+        el.className = 'note-message';
 
-            // Create a unique ID for the user (can be stored in localStorage)
-            let userId = localStorage.getItem('capi_user_id');
-            if (!userId) {
-                userId = 'user_' + Math.random().toString(36).substr(2, 9);
-                localStorage.setItem('capi_user_id', userId);
-            }
-
-            const message = {
-                text: text,
-                timestamp: Date.now(),
-                userId: userId
-            };
-
-            // Push to Firebase
-            database.ref('shared_notes').push(message);
-            noteInput.value = '';
+        // Check if it's me
+        const myId = localStorage.getItem('capi_user_id');
+        if (data.userId === myId) {
+            el.classList.add('my-message');
         }
 
-        sendNoteBtn.addEventListener('click', sendNote);
-        noteInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') sendNote();
-        });
+        // Format time
+        const date = new Date(data.timestamp);
+        const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-        // Listen for Notes
-        if (database) {
-            const notesRef = database.ref('shared_notes');
-
-            // On load, clear "Loading..."
-            notesRef.once('value').then(snapshot => {
-                notesList.innerHTML = '';
-                if (!snapshot.exists()) {
-                    notesList.innerHTML = '<div class="note-message system-message">Escribe la primera nota... ✨</div>';
-                }
-            });
-
-            notesRef.limitToLast(50).on('child_added', (snapshot) => {
-                const data = snapshot.val();
-                renderMessage(data);
-                scrollToBottom();
-            });
-        }
-
-        function renderMessage(data) {
-            const el = document.createElement('div');
-            el.className = 'note-message';
-
-            // Check if it's me
-            const myId = localStorage.getItem('capi_user_id');
-            if (data.userId === myId) {
-                el.classList.add('my-message');
-            }
-
-            // Format time
-            const date = new Date(data.timestamp);
-            const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-            el.innerHTML = `
+        el.innerHTML = `
                 <div class="note-text">${escapeHtml(data.text)}</div>
             `;
 
-            // Remove "System Message" if it exists
-            const sysMsg = notesList.querySelector('.system-message');
-            if (sysMsg) sysMsg.remove();
+        // Remove "System Message" if it exists
+        const sysMsg = notesList.querySelector('.system-message');
+        if (sysMsg) sysMsg.remove();
 
-            notesList.appendChild(el);
+        notesList.appendChild(el);
         }
 
         function escapeHtml(text) {
