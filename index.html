@@ -1087,27 +1087,29 @@
             notesList.scrollTop = notesList.scrollHeight;
         }
 
-        el.className = 'note-message';
+        function renderMessage(data) {
+            const el = document.createElement('div');
+            el.className = 'note-message';
 
-        // Check if it's me
-        const myId = localStorage.getItem('capi_user_id');
-        if (data.userId === myId) {
-            el.classList.add('my-message');
-        }
+            // Check if it's me
+            const myId = localStorage.getItem('capi_user_id');
+            if (data.userId === myId) {
+                el.classList.add('my-message');
+            }
 
-        // Format time
-        const date = new Date(data.timestamp);
-        const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            // Format time
+            const date = new Date(data.timestamp);
+            const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-        el.innerHTML = `
+            el.innerHTML = `
                 <div class="note-text">${escapeHtml(data.text)}</div>
             `;
 
-        // Remove "System Message" if it exists
-        const sysMsg = notesList.querySelector('.system-message');
-        if (sysMsg) sysMsg.remove();
+            // Remove "System Message" if it exists
+            const sysMsg = notesList.querySelector('.system-message');
+            if (sysMsg) sysMsg.remove();
 
-        notesList.appendChild(el);
+            notesList.appendChild(el);
         }
 
         function escapeHtml(text) {
