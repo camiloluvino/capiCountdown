@@ -1122,29 +1122,16 @@
         noteInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') sendNote();
         });
-
-        // Listen for Notes
-        if (database) {
-            const notesRef = database.ref('shared_notes');
-
-            // On load, clear "Loading..."
-            notesRef.once('value').then(snapshot => {
-                notesList.innerHTML = '';
-                if (!snapshot.exists()) {
-                    notesList.innerHTML = '<div class="note-message system-message">Escribe la primera nota... ✨</div>';
-                }
-            }).catch(e => {
-                notesList.innerHTML = '<div class="note-message system-message" style="color:red">Error de conexión: ' + e.message + '</div>';
             });
 
-            notesRef.limitToLast(50).on('child_added', (snapshot) => {
-                const data = snapshot.val();
-                renderMessage(data);
-                scrollToBottom();
-            }, (error) => {
-                console.error("Firebase read error:", error);
-                alert("❌ Error leyendo notas: " + error.message);
-            });
+        notesRef.limitToLast(50).on('child_added', (snapshot) => {
+            const data = snapshot.val();
+            renderMessage(data);
+            scrollToBottom();
+        }, (error) => {
+            console.error("Firebase read error:", error);
+            alert("❌ Error leyendo notas: " + error.message);
+        });
         }
 
         function scrollToBottom() {
