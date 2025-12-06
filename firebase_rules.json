@@ -1,0 +1,8 @@
+{
+    "rules": {
+        "shared_notes": {
+            ".read": true,
+            ".write": "newData.hasChildren(['text', 'userId', 'timestamp']) && newData.child('text').val().length < 500"
+        }
+    }
+}
