@@ -229,6 +229,7 @@
             width: 100%;
             max-width: 400px;
             text-align: center;
+            display: none; /* Hidden by default */
         }
 
         .debug-panel summary {
@@ -1116,6 +1117,33 @@
             simulatedDate.setDate(simulatedDate.getDate() + daysPassed);
             updateAll(simulatedDate);
         });
+
+
+        // Debug Panel Visibility Logic
+        function checkDebugMode() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const debugPanel = document.querySelector('.debug-panel');
+            
+            // 1. Check URL parameter ?debug=true
+            if (urlParams.get('debug') === 'true') {
+                debugPanel.style.display = 'block';
+            }
+
+            // 2. Secret Key Sequence: type 'dev'
+            let keySequence = '';
+            window.addEventListener('keydown', (e) => {
+                keySequence += e.key;
+                if (keySequence.length > 3) {
+                    keySequence = keySequence.slice(-3);
+                }
+                if (keySequence === 'dev') {
+                    debugPanel.style.display = debugPanel.style.display === 'none' ? 'block' : 'none';
+                    // Clear sequence to prevent double toggling
+                    keySequence = ''; 
+                }
+            });
+        }
+        checkDebugMode();
 
         // Night Mode Logic
         const themeToggle = document.getElementById('themeToggle');
