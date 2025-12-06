@@ -1083,6 +1083,70 @@
             }, 300);
         });
 
+
+        // Send Note
+        function sendNote() {
+            const text = noteInput.value.trim();
+            if (!text) return;
+            if (!database) {
+                alert("Error crítico: Firebase no se inició. Revisa la consola.");
+                return;
+            }
+
+            // Create a unique ID for the user
+            let userId = localStorage.getItem('capi_user_id');
+            if (!userId) {
+                userId = 'user_' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('capi_user_id', userId);
+            }
+
+            const message = {
+                text: text,
+                timestamp: Date.now(),
+                userId: userId
+            };
+
+            // Push to Firebase with Error Handling
+            const promise = database.ref('shared_notes').push(message);
+
+            promise.then(() => {
+                console.log("Nota enviada correctamente");
+                noteInput.value = '';
+            }).catch((error) => {
+                alert("❌ Error al guardar: " + error.message);
+                console.error("Firebase write error:", error);
+            });
+        }
+
+        sendNoteBtn.addEventListener('click', sendNote);
+        noteInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendNote();
+        });
+
+        // Listen for Notes
+        if (database) {
+            const notesRef = database.ref('shared_notes');
+
+            // On load, clear "Loading..."
+            notesRef.once('value').then(snapshot => {
+                notesList.innerHTML = '';
+                if (!snapshot.exists()) {
+                    notesList.innerHTML = '<div class="note-message system-message">Escribe la primera nota... ✨</div>';
+                }
+            }).catch(e => {
+                notesList.innerHTML = '<div class="note-message system-message" style="color:red">Error de conexión: ' + e.message + '</div>';
+            });
+
+            notesRef.limitToLast(50).on('child_added', (snapshot) => {
+                const data = snapshot.val();
+                renderMessage(data);
+                scrollToBottom();
+            }, (error) => {
+                console.error("Firebase read error:", error);
+                alert("❌ Error leyendo notas: " + error.message);
+            });
+        }
+
         function scrollToBottom() {
             notesList.scrollTop = notesList.scrollHeight;
         }
