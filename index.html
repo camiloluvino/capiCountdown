@@ -229,7 +229,8 @@
             width: 100%;
             max-width: 400px;
             text-align: center;
-            display: none; /* Hidden by default */
+            display: none;
+            /* Hidden by default */
         }
 
         .debug-panel summary {
@@ -772,6 +773,173 @@
             transform: scale(1.1);
         }
 
+        .notes-button {
+            position: fixed;
+            top: 30px;
+            left: 80px;
+            /* Right next to play button */
+            font-size: 1.5rem;
+            cursor: pointer;
+            background: none;
+            border: none;
+            opacity: 0.6;
+            transition: opacity 0.3s, transform 0.3s;
+            z-index: 101;
+        }
+
+        .notes-button:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        /* Notes Overlay */
+        #notes-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(253, 252, 245, 0.95);
+            z-index: 200;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        body.night-mode #notes-overlay {
+            background: rgba(26, 26, 46, 0.95);
+        }
+
+        .notes-container {
+            width: 90%;
+            max-width: 500px;
+            height: 80vh;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: var(--shadow-soft);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .notes-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .notes-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--text-color);
+        }
+
+        .notes-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+
+        .notes-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .note-message {
+            background: rgba(255, 255, 255, 0.6);
+            padding: 10px 15px;
+            border-radius: 15px;
+            max-width: 80%;
+            align-self: flex-start;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .note-message.my-message {
+            align-self: flex-end;
+            background: #E6A57E;
+            color: white;
+        }
+
+        body.night-mode .note-message {
+            background: rgba(60, 60, 80, 0.6);
+            color: #eee;
+        }
+
+        body.night-mode .note-message.my-message {
+            background: #8FBC8F;
+            /* Bamboo color for night/user */
+        }
+
+        .note-text {
+            font-size: 1rem;
+            word-wrap: break-word;
+        }
+
+        .note-time {
+            font-size: 0.7rem;
+            opacity: 0.7;
+            text-align: right;
+            margin-top: 5px;
+        }
+
+        .notes-input-area {
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.3);
+            display: flex;
+            gap: 10px;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        #noteInput {
+            flex: 1;
+            padding: 10px;
+            border-radius: 20px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            outline: none;
+            font-family: inherit;
+        }
+
+        #sendNote {
+            background: var(--bamboo-color);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        #sendNote:hover {
+            transform: scale(1.1);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         /* Player (Capybara in Game) */
         #game-player {
             position: absolute;
@@ -843,7 +1011,170 @@
         </div>
     </details>
 
+    <!-- Notes Button -->
+    <button class="notes-button" id="notesButton" title="Dedicato: Notas Compartidas">📒</button>
+
+    <!-- Notes Overlay -->
+    <div id="notes-overlay">
+        <div class="notes-container">
+            <div class="notes-header">
+                <h2>📒 Diario Compartido</h2>
+                <button class="notes-close" id="closeNotes">✕</button>
+            </div>
+            <div class="notes-messages" id="notesList">
+                <div class="note-message system-message">
+                    Cargando notas... (Si tarda, verifica la configuración)
+                </div>
+            </div>
+            <div class="notes-input-area">
+                <input type="text" id="noteInput" placeholder="Escribe algo bonito..." autocomplete="off">
+                <button id="sendNote">➤</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK (Version 8 Compat for simplicity in vanilla HTML) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
     <script>
+        // --- FIREBASE CONFIGURATION ---
+        // ⚠️ IMPORTANTE: Pega aquí abajo el código que te dio Firebase
+        // Reemplaza todo el objeto firebaseConfig con el tuyo.
+        const firebaseConfig = {
+            apiKey: "AIzaSyCHsBs2yjkX290sxePbpz8ub5KiEV482Xk",
+            authDomain: "capicountdown.firebaseapp.com",
+            projectId: "capicountdown",
+            storageBucket: "capicountdown.firebasestorage.app",
+            messagingSenderId: "400786374644",
+            appId: "1:400786374644:web:02cd7a3fc4ee3478bdc3a1",
+            measurementId: "G-9G94HV5RZV"
+        };
+        // -----------------------------
+
+        // Initialize Firebase safely
+        let database;
+        try {
+            firebase.initializeApp(firebaseConfig);
+            database = firebase.database();
+            console.log("Firebase inicializado");
+        } catch (e) {
+            console.error("Error inicializando Firebase (¿Falta la config?):", e);
+        }
+
+        const notesBtn = document.getElementById('notesButton');
+        const notesOverlay = document.getElementById('notes-overlay');
+        const closeNotesBtn = document.getElementById('closeNotes');
+        const noteInput = document.getElementById('noteInput');
+        const sendNoteBtn = document.getElementById('sendNote');
+        const notesList = document.getElementById('notesList');
+
+        // Toggle UI
+        notesBtn.addEventListener('click', () => {
+            notesOverlay.style.display = 'flex';
+            void notesOverlay.offsetWidth;
+            notesOverlay.style.opacity = '1';
+            scrollToBottom();
+        });
+
+        closeNotesBtn.addEventListener('click', () => {
+            notesOverlay.style.opacity = '0';
+            setTimeout(() => {
+                notesOverlay.style.display = 'none';
+            }, 300);
+        });
+
+        function scrollToBottom() {
+            notesList.scrollTop = notesList.scrollHeight;
+        }
+
+        // Send Note
+        function sendNote() {
+            const text = noteInput.value.trim();
+            if (!text) return;
+            if (!database) {
+                alert("¡Falta configurar Firebase! Revisa el código.");
+                return;
+            }
+
+            // Create a unique ID for the user (can be stored in localStorage)
+            let userId = localStorage.getItem('capi_user_id');
+            if (!userId) {
+                userId = 'user_' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('capi_user_id', userId);
+            }
+
+            const message = {
+                text: text,
+                timestamp: Date.now(),
+                userId: userId
+            };
+
+            // Push to Firebase
+            database.ref('shared_notes').push(message);
+            noteInput.value = '';
+        }
+
+        sendNoteBtn.addEventListener('click', sendNote);
+        noteInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendNote();
+        });
+
+        // Listen for Notes
+        if (database) {
+            const notesRef = database.ref('shared_notes');
+
+            // On load, clear "Loading..."
+            notesRef.once('value').then(snapshot => {
+                notesList.innerHTML = '';
+                if (!snapshot.exists()) {
+                    notesList.innerHTML = '<div class="note-message system-message">Escribe la primera nota... ✨</div>';
+                }
+            });
+
+            notesRef.limitToLast(50).on('child_added', (snapshot) => {
+                const data = snapshot.val();
+                renderMessage(data);
+                scrollToBottom();
+            });
+        }
+
+        function renderMessage(data) {
+            const el = document.createElement('div');
+            el.className = 'note-message';
+
+            // Check if it's me
+            const myId = localStorage.getItem('capi_user_id');
+            if (data.userId === myId) {
+                el.classList.add('my-message');
+            }
+
+            // Format time
+            const date = new Date(data.timestamp);
+            const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            el.innerHTML = `
+                <div class="note-text">${escapeHtml(data.text)}</div>
+                <div class="note-time">${timeStr}</div>
+            `;
+
+            // Remove "System Message" if it exists
+            const sysMsg = notesList.querySelector('.system-message');
+            if (sysMsg) sysMsg.remove();
+
+            notesList.appendChild(el);
+        }
+
+        function escapeHtml(text) {
+            if (!text) return text;
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
         // Configuration
         const targetDate = new Date('2026-01-28T00:00:00');
         const images = [
@@ -1123,7 +1454,7 @@
         function checkDebugMode() {
             const urlParams = new URLSearchParams(window.location.search);
             const debugPanel = document.querySelector('.debug-panel');
-            
+
             // 1. Check URL parameter ?debug=true
             if (urlParams.get('debug') === 'true') {
                 debugPanel.style.display = 'block';
@@ -1139,7 +1470,7 @@
                 if (keySequence === 'dev') {
                     debugPanel.style.display = debugPanel.style.display === 'none' ? 'block' : 'none';
                     // Clear sequence to prevent double toggling
-                    keySequence = ''; 
+                    keySequence = '';
                 }
             });
         }
@@ -1147,11 +1478,11 @@
 
         // Night Mode Logic
         const themeToggle = document.getElementById('themeToggle');
-        const body = document.body;
+        const bodyTheme = document.body;
 
         themeToggle.addEventListener('click', () => {
-            body.classList.toggle('night-mode');
-            const isNight = body.classList.contains('night-mode');
+            bodyTheme.classList.toggle('night-mode');
+            const isNight = bodyTheme.classList.contains('night-mode');
             themeToggle.innerText = isNight ? '☀️' : '🌙';
 
             // Optional: Switch Capybara to sleeping if night mode is on
@@ -1240,7 +1571,7 @@
         const gameOverlay = document.getElementById('game-overlay');
         const closeGameBtn = document.getElementById('closeGame');
         const player = document.getElementById('game-player');
-        const scoreDisplay = document.getElementById('score');
+        // scoreDisplay defined in updateScoreboard
 
         let gameActive = false;
         let score = 0;
