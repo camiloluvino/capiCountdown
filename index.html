@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contador Capibara</title>
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/3d-forest.css">
 </head>
 
 <body>
@@ -66,6 +67,7 @@
             <input type="range" id="timeTravel" min="0" max="60" step="1" value="0">
             <span id="debugDate">Fecha simulada: Hoy</span>
         </div>
+        <div id="versionDisplay" style="margin-top: 20px; font-size: 0.9rem; color: #888;">Cargando versión...</div>
     </details>
 
     <!-- Notes Button -->
@@ -76,6 +78,8 @@
         <div class="notes-container">
             <div class="notes-header">
                 <h2>📒 Diario Compartido</h2>
+                <button id="enter3dBtn" style="background:none; border:none; font-size:1.5rem; cursor:pointer;"
+                    title="Ver en el Bosque 3D">🌲</button>
                 <button class="notes-close" id="closeNotes">✕</button>
             </div>
             <div class="notes-messages" id="notesList">
@@ -88,10 +92,22 @@
         </div>
     </div>
 
+    <!-- 3D Forest Experiment Viewport -->
+    <div id="forest-viewport">
+        <div id="exit-3d-btn" onclick="toggle3DView()">✕ Salir del Bosque</div>
+        <div id="forest-fog"></div>
+        <div id="nav-hint">Usa la rueda del ratón o desliza para caminar</div>
+        <div id="forest-world">
+            <div class="forest-floor"></div>
+            <!-- Notes and trees added here by JS -->
+        </div>
+    </div>
+
     <!-- Firebase SDK (Version 8 Compat for simplicity in vanilla HTML) -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
+    <script src="js/3d-forest.js"></script>
     <script src="js/script.js"></script>
 </body>
 

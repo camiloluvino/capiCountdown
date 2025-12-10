@@ -1,0 +1,168 @@
+/* 3D Forest View Styles */
+#forest-viewport {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    perspective: 800px;
+    /* How "deep" the scene looks */
+    background: linear-gradient(to bottom, #87CEEB 0%, #E0F7FA 100%);
+    /* Day sky */
+    z-index: 10;
+    display: none;
+    /* Hidden by default toggled by JS */
+}
+
+body.night-mode #forest-viewport {
+    background: linear-gradient(to bottom, #0B1026 0%, #2B32B2 100%);
+    /* Night sky */
+}
+
+#forest-world {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transform: translateZ(0);
+    /* Starting position */
+    transition: transform 0.1s ease-out;
+    /* Smooth movement */
+}
+
+/* Floor / Path */
+.forest-floor {
+    position: absolute;
+    width: 200%;
+    height: 20000px;
+    /* Long path */
+    background: linear-gradient(to bottom, #556B2F, #8FBC8F);
+    top: 50%;
+    left: -50%;
+    transform: rotateX(90deg) translateZ(-200px);
+    /* Lay flat */
+    background-image:
+        repeating-linear-gradient(0deg, transparent 0, transparent 49px, rgba(0, 0, 0, 0.05) 50px),
+        repeating-linear-gradient(90deg, transparent 0, transparent 49px, rgba(0, 0, 0, 0.05) 50px);
+    background-size: 100px 100px;
+}
+
+/* Notes in 3D Space - "Paper on Ground" Style */
+.note-3d {
+    position: absolute;
+    width: 260px;
+    padding: 30px;
+    background: #FDFCF5;
+    /* Paper color */
+    border: none;
+    border-radius: 2px;
+    font-family: 'Lora', serif;
+    /* Handwriting feel */
+    font-style: italic;
+    color: #4A4A4A;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    /* Subtle ground shadow */
+
+    /* Centered pivot for easy transform */
+    left: 50%;
+    top: 50%;
+    /* Transformation handled by JS (translate3d + rotateX(-90) + rotateZ) */
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    backface-visibility: hidden;
+}
+
+body.night-mode .note-3d {
+    background: #e0e0e0;
+    color: #1a1a2e;
+}
+
+.note-3d-text {
+    font-size: 1.1rem;
+    line-height: 1.4;
+    margin-bottom: 15px;
+}
+
+.note-3d-meta {
+    font-size: 0.7rem;
+    opacity: 0.5;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Simple Trees (CSS Only) */
+.tree-3d {
+    --tree-color: #2E8B57;
+    /* Default fallback */
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-left: 60px solid transparent;
+    border-right: 60px solid transparent;
+    border-bottom: 200px solid var(--tree-color);
+    /* Leaves */
+    left: 50%;
+    top: 50%;
+    transform-origin: bottom center;
+}
+
+.tree-3d::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 40px;
+    background: #8B4513;
+    /* Trunk */
+    bottom: -190px;
+    /* Relative to border-bottom */
+    left: -10px;
+}
+
+/* Fog to hide the end of the world */
+#forest-fog {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(224, 247, 250, 0.8) 80%, #E0F7FA 100%);
+    z-index: 100;
+}
+
+body.night-mode #forest-fog {
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(11, 16, 38, 0.8) 80%, #0B1026 100%);
+}
+
+#exit-3d-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 200;
+    background: #FF6347;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+#nav-hint {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 10px 20px;
+    border-radius: 20px;
+    z-index: 200;
+    pointer-events: none;
+}

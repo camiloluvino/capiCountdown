@@ -100,6 +100,7 @@ if (database) {
     notesRef.limitToLast(50).on('child_added', (snapshot) => {
         const data = snapshot.val();
         renderMessage(data);
+        if (window.addNoteTo3D) window.addNoteTo3D(data);
         scrollToBottom();
     }, (error) => {
         console.error("Error leyendo notas:", error);
@@ -451,6 +452,23 @@ function checkDebugMode() {
     });
 }
 checkDebugMode();
+
+// Version Display
+const APP_VERSION = "v1.2 - Actualizado: 23:29 (Lush Forest)";
+const versionEl = document.getElementById('versionDisplay');
+if (versionEl) versionEl.innerText = versionEl.innerText = "Versión: " + APP_VERSION;
+
+// 3D Forest Integration
+window.addEventListener('load', () => {
+    if (window.init3DForest) window.init3DForest();
+
+    const enter3dBtn = document.getElementById('enter3dBtn');
+    if (enter3dBtn) {
+        enter3dBtn.addEventListener('click', () => {
+            if (window.toggle3DView) window.toggle3DView();
+        });
+    }
+});
 
 // Night Mode Logic
 const themeToggle = document.getElementById('themeToggle');
