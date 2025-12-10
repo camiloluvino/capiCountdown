@@ -7,17 +7,13 @@
     height: 100%;
     overflow: hidden;
     perspective: 800px;
-    /* How "deep" the scene looks */
     background: linear-gradient(to bottom, #87CEEB 0%, #E0F7FA 100%);
-    /* Day sky */
     z-index: 10;
     display: none;
-    /* Hidden by default toggled by JS */
 }
 
 body.night-mode #forest-viewport {
     background: linear-gradient(to bottom, #0B1026 0%, #2B32B2 100%);
-    /* Night sky */
 }
 
 #forest-world {
@@ -26,9 +22,7 @@ body.night-mode #forest-viewport {
     height: 100%;
     transform-style: preserve-3d;
     transform: translateZ(0);
-    /* Starting position */
     transition: transform 0.1s ease-out;
-    /* Smooth movement */
 }
 
 /* Floor / Path */
@@ -36,44 +30,52 @@ body.night-mode #forest-viewport {
     position: absolute;
     width: 200%;
     height: 20000px;
-    /* Long path */
     background: linear-gradient(to bottom, #556B2F, #8FBC8F);
     top: 50%;
     left: -50%;
     transform: rotateX(90deg) translateZ(-200px);
-    /* Lay flat */
     background-image:
         repeating-linear-gradient(0deg, transparent 0, transparent 49px, rgba(0, 0, 0, 0.05) 50px),
         repeating-linear-gradient(90deg, transparent 0, transparent 49px, rgba(0, 0, 0, 0.05) 50px);
     background-size: 100px 100px;
 }
 
-/* Notes in 3D Space - "Paper on Ground" Style */
+/* Notes in 3D Space - "Interactive Envelope" Style */
 .note-3d {
     position: absolute;
-    width: 260px;
-    padding: 30px;
+    width: 120px;
+    /* Smaller, like a folded letter */
+    height: 80px;
     background: #FDFCF5;
-    /* Paper color */
-    border: none;
-    border-radius: 2px;
-    font-family: 'Lora', serif;
-    /* Handwriting feel */
-    font-style: italic;
-    color: #4A4A4A;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
-    /* Subtle ground shadow */
+    border: 1px solid #dcdcdc;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    /* Indicates clickability */
 
-    /* Centered pivot for easy transform */
+    /* Centered pivot */
     left: 50%;
     top: 50%;
-    /* Transformation handled by JS (translate3d + rotateX(-90) + rotateZ) */
 
+    /* Flex to center a visual "text" hint */
     display: flex;
-    flex-direction: column;
+    justify-content: center;
     align-items: center;
-    text-align: center;
     backface-visibility: hidden;
+    transition: transform 0.2s ease;
+}
+
+.note-3d:hover {
+    background: #fff;
+    border-color: #bbb;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
+}
+
+/* "Lines" to simulate text on the envelope */
+.note-3d::after {
+    content: "✉️";
+    font-size: 2rem;
+    opacity: 0.6;
 }
 
 body.night-mode .note-3d {
@@ -81,17 +83,62 @@ body.night-mode .note-3d {
     color: #1a1a2e;
 }
 
-.note-3d-text {
-    font-size: 1.1rem;
-    line-height: 1.4;
-    margin-bottom: 15px;
+/* Note Reading Modal */
+#note-reading-modal {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 300;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
 }
 
-.note-3d-meta {
-    font-size: 0.7rem;
-    opacity: 0.5;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+#note-reading-modal.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+#note-reading-modal .modal-content {
+    background: #fffaf0;
+    padding: 40px;
+    width: 80%;
+    max-width: 500px;
+    border-radius: 8px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    position: relative;
+    text-align: center;
+    font-family: 'Lora', serif;
+}
+
+#close-modal-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #888;
+}
+
+#modal-text {
+    font-size: 1.4rem;
+    color: #333;
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+#modal-meta {
+    font-size: 0.9rem;
+    color: #666;
+    font-style: italic;
+    border-top: 1px solid #ddd;
+    padding-top: 10px;
 }
 
 /* Simple Trees (CSS Only) */
@@ -122,7 +169,7 @@ body.night-mode .note-3d {
     left: -10px;
 }
 
-/* Fog to hide the end of the world */
+/* Fog & UI */
 #forest-fog {
     position: absolute;
     top: 0;

@@ -445,7 +445,10 @@ function checkDebugMode() {
             keySequence = keySequence.slice(-3);
         }
         if (keySequence === 'dev') {
-            debugPanel.style.display = debugPanel.style.display === 'none' ? 'block' : 'none';
+            const isHidden = debugPanel.style.display === 'none' || debugPanel.style.display === '';
+            debugPanel.style.display = isHidden ? 'block' : 'none';
+            if (isHidden) debugPanel.open = true; // Auto-expand
+
             // Clear sequence to prevent double toggling
             keySequence = '';
         }
@@ -454,9 +457,115 @@ function checkDebugMode() {
 checkDebugMode();
 
 // Version Display
-const APP_VERSION = "v1.2 - Actualizado: 23:29 (Lush Forest)";
+const APP_VERSION = "v1.7 - Admin God Mode Enabled";
 const versionEl = document.getElementById('versionDisplay');
 if (versionEl) versionEl.innerText = versionEl.innerText = "Versión: " + APP_VERSION;
+
+// Admin Panel Logic
+const adminList = document.getElementById('adminNotesList');
+const refreshBtn = document.getElementById('refreshAdminNotes');
+const editForm = document.getElementById('adminEditForm');
+const editKeyInput = document.getElementById('editKey');
+const editTextInput = document.getElementById('editText');
+const editTimeInput = document.getElementById('editTime');
+const saveEditBtn = document.getElementById('saveEditBtn');
+const cancelEditBtn = document.getElementById('cancelEditBtn');
+
+if (refreshBtn) {
+    refreshBtn.addEventListener('click', loadAdminNotes);
+}
+
+function loadAdminNotes() {
+    if (!database) return;
+    adminList.innerHTML = 'Cargando...';
+
+    database.ref('shared_notes').once('value').then(snapshot => {
+        adminList.innerHTML = '';
+        const notes = snapshot.val() || {};
+
+        Object.keys(notes).forEach(key => {
+            const note = notes[key];
+            const div = document.createElement('div');
+            div.className = 'admin-note-item';
+
+            const dateStr = new Date(note.timestamp).toLocaleString();
+            const shortText = note.text.substring(0, 20) + (note.text.length > 20 ? '...' : '');
+
+            div.innerHTML = `
+                <div class="admin-note-info" title="${note.text}">
+                    <strong>${dateStr}</strong><br>
+                    ${shortText}
+                </div>
+                <div class="admin-btn-group">
+                    <button class="admin-btn edit-btn" data-key="${key}">✏️</button>
+                    <button class="admin-btn delete-btn" data-key="${key}">🗑️</button>
+                </div>
+            `;
+
+            // Attach Events
+            div.querySelector('.edit-btn').addEventListener('click', () => openAdminEdit(key, note));
+            div.querySelector('.delete-btn').addEventListener('click', () => deleteAdminNote(key));
+
+            adminList.appendChild(div);
+        });
+    });
+}
+
+function openAdminEdit(key, note) {
+    editForm.classList.remove('hidden');
+    editKeyInput.value = key;
+    editTextInput.value = note.text;
+
+    // Format Date for datetime-local input (YYYY-MM-DDTHH:mm)
+    const date = new Date(note.timestamp);
+    // Adjust for timezone offset to keep local time
+    const tzOffset = date.getTimezoneOffset() * 60000;
+    const localISOTime = (new Date(date - tzOffset)).toISOString().slice(0, 16);
+
+    editTimeInput.value = localISOTime;
+}
+
+function closeAdminEdit() {
+    editForm.classList.add('hidden');
+}
+
+if (cancelEditBtn) cancelEditBtn.addEventListener('click', closeAdminEdit);
+
+if (saveEditBtn) {
+    saveEditBtn.addEventListener('click', () => {
+        const key = editKeyInput.value;
+        const newText = editTextInput.value;
+        const newTimeStr = editTimeInput.value;
+
+        if (!key || !newText || !newTimeStr) return;
+
+        const newTimestamp = new Date(newTimeStr).getTime();
+
+        database.ref('shared_notes/' + key).update({
+            text: newText,
+            timestamp: newTimestamp
+        }).then(() => {
+            alert('Nota actualizada');
+            closeAdminEdit();
+            loadAdminNotes(); // Refresh list
+
+            // Optional: Refresh Main View?
+            // Page reload might be easiest to sync everything
+            if (confirm("Recargar página para ver cambios?")) location.reload();
+        });
+    });
+}
+
+function deleteAdminNote(key) {
+    if (confirm('¿Seguro que quieres borrar esta nota para siempre?')) {
+        database.ref('shared_notes/' + key).remove().then(() => {
+            loadAdminNotes();
+            // location.reload(); // Optional
+        });
+    }
+}
+
+// 3D Forest Integration logic remains...
 
 // 3D Forest Integration
 window.addEventListener('load', () => {

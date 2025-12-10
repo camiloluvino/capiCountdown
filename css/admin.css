@@ -1,0 +1,107 @@
+/* Admin Panel Styles */
+.admin-list {
+    max-height: 200px;
+    overflow-y: auto;
+    background: #f9f9f9;
+    border: 1px solid #eee;
+    font-size: 0.8rem;
+    color: #333;
+    padding: 5px;
+}
+
+.admin-note-item {
+    border-bottom: 1px solid #ddd;
+    padding: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.admin-note-item:last-child {
+    border-bottom: none;
+}
+
+.admin-note-info {
+    flex: 1;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.admin-btn-group {
+    display: flex;
+    gap: 5px;
+}
+
+.admin-btn {
+    border: none;
+    cursor: pointer;
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-size: 0.7rem;
+}
+
+.edit-btn {
+    background: #FFD700;
+    color: #333;
+}
+
+.delete-btn {
+    background: #ff6b6b;
+    color: white;
+}
+
+.admin-edit-form {
+    background: #fff;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-top: 10px;
+    position: absolute;
+    /* Overlay */
+    bottom: 0px;
+    left: 0;
+    width: 100%;
+    box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+}
+
+.admin-edit-form textarea {
+    width: 100%;
+    margin-bottom: 5px;
+}
+
+.admin-edit-form input {
+    width: 100%;
+    margin-bottom: 5px;
+}
+
+.hidden {
+    display: none;
+}
+
+.save-btn {
+    background: #4caf50;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.cancel-btn {
+    background: #ccc;
+    color: #333;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+body.night-mode .admin-list {
+    background: #222;
+    color: #ccc;
+    border-color: #444;
+}
+
+body.night-mode .admin-edit-form {
+    background: #333;
+    color: white;
+}

@@ -7,6 +7,7 @@
     <title>Contador Capibara</title>
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/3d-forest.css">
+    <link rel="stylesheet" href="css/admin.css">
 </head>
 
 <body>
@@ -68,6 +69,27 @@
             <span id="debugDate">Fecha simulada: Hoy</span>
         </div>
         <div id="versionDisplay" style="margin-top: 20px; font-size: 0.9rem; color: #888;">Cargando versión...</div>
+
+        <!-- Admin Panel for Notes -->
+        <details id="adminPanel" style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 10px;">
+            <summary>📝 Admin Notas (God Mode)</summary>
+            <button id="refreshAdminNotes" style="margin: 5px 0; font-size: 0.8rem;">🔄 Recargar Lista</button>
+            <div id="adminNotesList" class="admin-list">
+                <!-- Populated by JS -->
+            </div>
+
+            <!-- Hidden Edit Form -->
+            <div id="adminEditForm" class="admin-edit-form hidden">
+                <h4>Editar Nota</h4>
+                <input type="hidden" id="editKey">
+                <textarea id="editText" rows="3" placeholder="Contenido"></textarea>
+                <input type="datetime-local" id="editTime">
+                <div class="admin-actions">
+                    <button id="saveEditBtn" class="save-btn">Guardar</button>
+                    <button id="cancelEditBtn" class="cancel-btn">Cancelar</button>
+                </div>
+            </div>
+        </details>
     </details>
 
     <!-- Notes Button -->
@@ -100,6 +122,15 @@
         <div id="forest-world">
             <div class="forest-floor"></div>
             <!-- Notes and trees added here by JS -->
+        </div>
+
+        <!-- Hidden Modal for Reading Notes -->
+        <div id="note-reading-modal" class="hidden">
+            <div class="modal-content">
+                <span id="close-modal-btn">✕</span>
+                <div id="modal-text"></div>
+                <div id="modal-meta"></div>
+            </div>
         </div>
     </div>
 
