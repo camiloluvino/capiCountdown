@@ -103,44 +103,59 @@
     <!-- Notes Overlay -->
     <div id="notes-overlay">
         <div class="notes-container">
-            <div class="notes-header">
-                <h2>📒 Diario Compartido</h2>
-                <button id="enter3dBtn" style="background:none; border:none; font-size:1.5rem; cursor:pointer;"
-                    title="Ver en el Bosque 3D">🌲</button>
-                <button class="notes-close" id="closeNotes">✕</button>
+            <button class="notes-close" id="closeNotes">✕</button>
+            <h2 class="notes-title">Diario Compartido</h2>
+            <div class="notes-input-area">
+                <textarea id="noteInput" placeholder="Escribe algo bonito..." maxlength="1000"></textarea>
+                <button id="sendNote">Enviar</button>
             </div>
-            <div class="notes-messages" id="notesList">
+            <div id="notesList">
                 <!-- Notes will appear here -->
             </div>
-            <div class="notes-input-area">
-                <input type="text" id="noteInput" placeholder="Escribe algo bonito..." autocomplete="off">
-                <button id="sendNote">➤</button>
-            </div>
+            <!-- Botón redundante para ir a 3D (para testeo) -->
+            <button id="start-3d-btn"
+                style="margin-top:10px; background:none; border:none;  font-size:1.5rem; cursor:pointer;"
+                title="Paseo por el Bosque">🌲</button>
         </div>
     </div>
 
-    <!-- 3D Forest Experiment Viewport -->
+    <!-- 3D Viewport -->
     <div id="forest-viewport">
-        <div id="exit-3d-btn" onclick="toggle3DView()">✕ Salir del Bosque</div>
         <div id="forest-fog"></div>
-        <div id="nav-hint">Usa la rueda del ratón o desliza para caminar</div>
         <div id="forest-world">
             <div class="forest-floor"></div>
-            <!-- Notes and trees added here by JS -->
+            <!-- Trees and Notes injected here -->
         </div>
 
-        <!-- Hidden Modal for Reading Notes -->
-        <div id="note-reading-modal" class="hidden">
+        <!-- NEW: UI Note Button -->
+        <button id="forest-add-note-btn" class="forest-ui-btn" title="Agregar nota">
+            📝 Agregar Nota
+        </button>
+
+        <!-- Note Reading Modal -->
+        <div id="note-reading-modal">
             <div class="modal-content">
                 <span id="close-modal-btn">✕</span>
-                <div id="modal-text"></div>
+                <p id="modal-text"></p>
                 <div id="modal-meta"></div>
             </div>
         </div>
+
+        <!-- Note WRITING Modal (New) -->
+        <div id="note-writing-modal">
+            <div class="modal-content">
+                <span id="close-write-modal-btn">✕</span>
+                <h3>Nueva Nota</h3>
+                <textarea id="write-modal-input" placeholder="Deja tu huella en el bosque..."
+                    maxlength="1000"></textarea>
+                <button id="write-modal-save">Clavar en el árbol 📌</button>
+            </div>
+        </div>
+
+        <div id="nav-hint">Usa la rueda del ratón o desliza para caminar</div>
     </div>
 
-    <!-- Firebase SDK (Version 8 Compat for simplicity in vanilla HTML) -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script src="js/3d-forest.js"></script>

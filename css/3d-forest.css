@@ -106,15 +106,18 @@ body.night-mode .note-3d {
 }
 
 #note-reading-modal .modal-content {
-    background: #fffaf0;
+    background: #fffef8;
+    background-image: linear-gradient(#ebebeb .1em, transparent .1em);
+    background-size: 100% 1.5em;
     padding: 40px;
-    width: 80%;
+    width: 90%;
     max-width: 500px;
-    border-radius: 8px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.2);
     position: relative;
     text-align: center;
-    font-family: 'Lora', serif;
+    font-family: 'Indie Flower', cursive;
+    transform: rotate(-1deg);
+    /* Slight rotation opposite to write modal for variety */
 }
 
 #close-modal-btn {
@@ -127,18 +130,27 @@ body.night-mode .note-3d {
 }
 
 #modal-text {
-    font-size: 1.4rem;
-    color: #333;
+    font-size: 1.8rem;
+    /* Matches textarea size */
+    color: #2c3e50;
     margin-bottom: 20px;
-    line-height: 1.5;
+    line-height: 1.5em;
+    /* Matches background lines */
+    text-align: left;
+    /* Handwritten notes usually left aligned or natural */
+    white-space: pre-wrap;
+    /* Preserve line breaks */
 }
 
 #modal-meta {
-    font-size: 0.9rem;
+    font-size: 1rem;
     color: #666;
     font-style: italic;
-    border-top: 1px solid #ddd;
+    border-top: none;
+    /* Removed border for cleaner look */
     padding-top: 10px;
+    text-align: right;
+    font-family: 'Indie Flower', cursive;
 }
 
 /* Simple Trees (CSS Only) */
@@ -181,6 +193,129 @@ body.night-mode #forest-fog {
     background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(11, 16, 38, 0.8) 80%, #0B1026 100%);
 }
 
+/* Ghost Note (Add New) */
+.note-3d.ghost {
+    background: #fff9c4;
+    /* Opaque Post-it Yellow */
+    border: 3px dashed #FF6347;
+    /* High contrast dashed border */
+    color: #FF6347;
+    opacity: 0.9;
+    animation: floatGhost 3s ease-in-out infinite;
+}
+
+.note-3d.ghost::after {
+    content: "NUEVA";
+    /* Clear text */
+    font-size: 0.8rem;
+    font-weight: bold;
+    left: 10%;
+    top: 35%;
+    filter: none;
+    font-family: 'Outfit', sans-serif;
+}
+
+.note-3d.ghost:hover {
+    background: #fff;
+    transform: scale(1.2);
+    box-shadow: 0 0 25px rgba(255, 99, 71, 0.6);
+    border-style: solid;
+    cursor: pointer;
+    z-index: 2000;
+}
+
+@keyframes floatGhost {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+/* Note Writing Modal - Handwritten */
+#note-writing-modal {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 300;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+}
+
+#note-writing-modal.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+#note-writing-modal .modal-content {
+    background: #fffef8;
+    background-image: linear-gradient(#ebebeb .1em, transparent .1em);
+    background-size: 100% 1.5em;
+    padding: 40px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.2);
+    position: relative;
+    text-align: center;
+    font-family: 'Indie Flower', cursive;
+    transform: rotate(1deg);
+}
+
+#note-writing-modal textarea {
+    width: 100%;
+    height: 150px;
+    background: transparent;
+    border: none;
+    font-family: 'Indie Flower', cursive;
+    font-size: 1.8rem;
+    color: #2c3e50;
+    line-height: 1.5em;
+    resize: none;
+    outline: none;
+    margin-top: 20px;
+}
+
+#note-writing-modal button {
+    margin-top: 20px;
+    font-family: 'Indie Flower', cursive;
+    font-size: 1.5rem;
+    font-weight: bold;
+    padding: 10px 30px;
+    background: #2E8B57;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    /* Less round for handwritten feel? Or sketchy? */
+    cursor: pointer;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s;
+}
+
+#note-writing-modal button:hover {
+    transform: scale(1.05);
+    background: #3CB371;
+}
+
+#close-write-modal-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #888;
+}
+
 #exit-3d-btn {
     position: fixed;
     top: 20px;
@@ -208,4 +343,34 @@ body.night-mode #forest-fog {
     border-radius: 20px;
     z-index: 200;
     pointer-events: none;
+}
+
+/* NEW UI Button */
+#forest-add-note-btn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    /* Top Left to balance Exit Button (Top Right) */
+    z-index: 200;
+    background: #fff9c4;
+    /* Match note color */
+    color: #8B4513;
+    border: 2px solid #8B4513;
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-family: 'Outfit', sans-serif;
+    /* Or 'Indie Flower' */
+    font-weight: bold;
+    font-size: 1rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    display: none;
+    /* Hidden by default */
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+#forest-add-note-btn:hover {
+    transform: scale(1.05);
+    background: #ffffff;
+    box-shadow: 0 6px 15px rgba(255, 215, 0, 0.4);
 }

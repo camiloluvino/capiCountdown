@@ -31,6 +31,9 @@ El proyecto **SIEMPRE** debe mantener un "Modo Desarrollador" accesible pero dis
 ## 4. Flujo de Trabajo y Git 🔄
 *   **Commits:** Mensajes claros y descriptivos.
 *   **Backups:** Antes de cambios radicales, asegurar que la versión estable esté commiteada ("Punto de Guardado").
+35: *   **Despliegue en GitHub Pages (CRÍTICO):**
+    *   **Problema Común:** A menudo trabajamos en `master`, pero GitHub Pages despliega desde `gh-pages`. Esto causa que los cambios no se vean reflejados en la web.
+    *   **Solución:** Siempre verificar `git branch -a`. Si existe `gh-pages`, al terminar una versión estable, ejecutar explícitamente: `git push origin master:gh-pages`.
 
 ---
 *Este archivo debe ser leído al inicio de cada nueva sesión de desarrollo para alinear el contexto.*

@@ -508,7 +508,7 @@ function checkDebugMode() {
 checkDebugMode();
 
 // Version Display
-const APP_VERSION = "v2.9 - Forest Icon & Clean Meta";
+const APP_VERSION = "v3.2 - Fix DB Error";
 const versionEl = document.getElementById('versionDisplay');
 if (versionEl) versionEl.innerText = versionEl.innerText = "Versión: " + APP_VERSION;
 
@@ -1008,3 +1008,69 @@ function showFeedback(x, y, text) {
     gameOverlay.appendChild(feedback);
     setTimeout(() => feedback.remove(), 800);
 }
+
+// ==========================================
+// 3. Render Notes & 3D Hooks (Restored)
+// ==========================================
+
+function renderNotes(notes) {
+    const list = document.getElementById('notesList');
+    if (!list) return;
+
+    list.innerHTML = '';
+
+    notes.forEach(note => {
+        const div = document.createElement('div');
+        div.className = 'note-entry';
+
+        const date = new Date(note.timestamp);
+        // Clean Date Formatting
+        const timeStr = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+
+        div.innerHTML = `
+            <div class="note-id">#${note.id} <span class="note-time">${timeStr}</span></div>
+            <div class="note-text">${escapeHtml(note.text)}</div>
+        `;
+        list.appendChild(div);
+    });
+
+    // --- 3D INJECTION ---
+    if (window.spawnBlankNote) {
+        // Wait a bit for forest to init
+        setTimeout(window.spawnBlankNote, 1000);
+    }
+}
+
+// Global Save Hook for 3D
+window.save3DNote = function (text) {
+    if (!database) {
+        console.error("Database not initialized");
+        return;
+    }
+    const noteRef = database.ref('shared_notes').push();
+    noteRef.set({
+        text: text,
+        timestamp: firebase.database.ServerValue.TIMESTAMP,
+        userId: generateUserId()
+    }, (error) => {
+        if (error) {
+            alert("Error de Firebase: " + error.message);
+        } else {
+            console.log("Nota guardada con éxito");
+        }
+    });
+
+    // Helper for generating User ID if needed inside this scope, 
+    // though usually we use localStorage logic in sendNote.
+    function generateUserId() {
+        let userId = localStorage.getItem('capi_user_id');
+        if (!userId) {
+            userId = 'user_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('capi_user_id', userId);
+        }
+        return userId;
+    }
+};

@@ -67,6 +67,14 @@ function init3DForest() {
     }, { passive: false });
 
     requestAnimationFrame(render3DLoop);
+
+    // Bind UI Add Note Button
+    const addNoteBtn = document.getElementById('forest-add-note-btn');
+    if (addNoteBtn) {
+        addNoteBtn.addEventListener('click', () => {
+            openWriteModal();
+        });
+    }
 }
 
 function toggle3DView() {
@@ -74,6 +82,7 @@ function toggle3DView() {
     // We strictly Hide the 2D overlay if it was open (though now we skip it)
     const noteOverlay = document.getElementById('notes-overlay');
     const exitBtn = document.getElementById('exit-3d-btn');
+    const addNoteBtn = document.getElementById('forest-add-note-btn'); // NEW
 
     forestState.active = !forestState.active;
 
@@ -95,6 +104,7 @@ function toggle3DView() {
         viewport.style.display = 'block';
         if (noteOverlay) noteOverlay.style.display = 'none'; // Ensure 2D list is GONE
         if (exitBtn) exitBtn.style.display = 'block';
+        if (addNoteBtn) addNoteBtn.style.display = 'block'; // SHOW BUTTON
 
         document.body.style.overflow = 'hidden';
 
@@ -111,12 +121,16 @@ function toggle3DView() {
         forestState.targetZ = 0;
         forestState.cameraZ = 0;
 
+        // FAILSAFE: Accessing 3D view should ALWAYS ensure a blank note exists
+        // (Ghost logic removed)
+
     } else {
         // SALIENDO DEL BOSQUE
         viewport.style.display = 'none';
         // DO NOT show noteOverlay active again. We go back to MAIN SCREEN.
         if (noteOverlay) noteOverlay.style.display = 'none';
         if (exitBtn) exitBtn.style.display = 'none';
+        if (addNoteBtn) addNoteBtn.style.display = 'none'; // HIDE BUTTON
 
         document.body.style.overflow = '';
 
@@ -145,9 +159,14 @@ function render3DLoop() {
     requestAnimationFrame(render3DLoop);
 }
 
+const spawnDebounceTimer = null;
+
 // Hook called by main script
 function addNoteTo3D(data) {
     if (!forestState.world) return;
+
+    // 1. Ghost Note Cleanup handled by spawnBlankNote logic eventually,
+    // but here we just append the real note. The next spawnBlankNote call will fix the position.
 
     // Z Spacing with Jitter (v2.3)
     const zJitter = (Math.random() * 400) - 200;
@@ -161,7 +180,7 @@ function addNoteTo3D(data) {
     const treeX = side * dist;
     const treeY = 100;
 
-    // Create Big Hero Tree 
+    // Create Big Hero Tree
     const scale = 2.2 + Math.random() * 0.8;
     const treeEl = createTreeElement(treeX, treeY, zPos, scale);
     forestState.world.appendChild(treeEl);
@@ -173,7 +192,7 @@ function addNoteTo3D(data) {
 
     // Position
     const noteY = treeY - (30 * scale);
-    const noteZ = zPos + 5; // Reverted to +5 (Standard v2.3)
+    const noteZ = zPos + 5;
 
     noteEl.style.transform = `translate3d(${treeX}px, ${noteY}px, ${noteZ}px) rotateZ(${Math.random() * 10 - 5}deg)`;
 
@@ -199,7 +218,62 @@ function addNoteTo3D(data) {
         const tree = createTreeElement(dX, 100, decorZ, dScale);
         forestState.world.appendChild(tree);
     }
+
+    // 2. No more Ghost Note spawn. Logic removed.
 }
+
+// ------ NEW: CREATE NOTE LOGIC (UI BUTTON) ------
+// Ghost Logic Removed. Use openWriteModal directly via UI button.
+
+function openWriteModal() {
+    const modal = document.getElementById('note-writing-modal');
+    if (modal) modal.classList.add('visible');
+    forestState.active = false; // Pause movement
+}
+
+function closeWriteModal() {
+    const modal = document.getElementById('note-writing-modal');
+    if (modal) modal.classList.remove('visible');
+    forestState.active = true;
+}
+
+// Attach Write Modal Events
+window.addEventListener('load', () => {
+    // Reading Modal
+    const closeBtn = document.getElementById('close-modal-btn');
+    if (closeBtn) closeBtn.addEventListener('click', closeNoteModal);
+    const rModal = document.getElementById('note-reading-modal');
+    if (rModal) rModal.addEventListener('click', (e) => { if (e.target === rModal) closeNoteModal(); });
+
+    // Writing Modal
+    const wModal = document.getElementById('note-writing-modal');
+    const closeWBtn = document.getElementById('close-write-modal-btn');
+    const saveBtn = document.getElementById('write-modal-save');
+    const input = document.getElementById('write-modal-input');
+
+    if (closeWBtn) closeWBtn.addEventListener('click', closeWriteModal);
+    if (wModal) wModal.addEventListener('click', (e) => { if (e.target === wModal) closeWriteModal(); });
+
+    if (saveBtn && input) {
+        saveBtn.addEventListener('click', () => {
+            const text = input.value;
+            if (text.trim()) {
+                // Call global save (in script.js)
+                if (window.save3DNote) {
+                    window.save3DNote(text);
+                    input.value = '';
+                    closeWriteModal();
+                    alert("¡Nota clavada en el árbol! 🌲📌");
+                    // Optimization: We could locally spawn it immediately,
+                    // but Firebase listener will likely trigger 'addNoteTo3D' anyway.
+                    // spawnBlankNote will be triggered by that listener's flow.
+                } else {
+                    alert("Error: No se pudo conectar con la base de datos.");
+                }
+            }
+        });
+    }
+});
 
 function createTreeElement(x, y, z, scale) {
     const tree = document.createElement('div');
@@ -233,6 +307,7 @@ function openNoteModal(data) {
     metaEl.innerText = timeStr;
 
     modal.classList.add('visible');
+    forestState.active = false;
 }
 
 function closeNoteModal() {
@@ -241,18 +316,7 @@ function closeNoteModal() {
     forestState.active = true;
 }
 
-window.addEventListener('load', () => {
-    const closeBtn = document.getElementById('close-modal-btn');
-    if (closeBtn) closeBtn.addEventListener('click', closeNoteModal);
-
-    const modal = document.getElementById('note-reading-modal');
-    if (modal) {
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) closeNoteModal();
-        });
-    }
-});
-
 window.init3DForest = init3DForest;
 window.toggle3DView = toggle3DView;
 window.addNoteTo3D = addNoteTo3D;
+// window.spawnBlankNote = spawnBlankNote; // Logic removed
