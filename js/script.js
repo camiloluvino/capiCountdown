@@ -23,27 +23,78 @@ try {
     console.error("Error inicializando Firebase (¿Falta la config?):", e);
 }
 
-const notesBtn = document.getElementById('notesButton');
+// --- Notes System Integration ---
+const notesButton = document.getElementById('notesButton');
 const notesOverlay = document.getElementById('notes-overlay');
-const closeNotesBtn = document.getElementById('closeNotes');
+const closeNotes = document.getElementById('closeNotes');
+const start3dBtn = document.getElementById('start-3d-btn');
+
+// Load Notes on Startup
+// Assuming fetchNotes() is defined elsewhere or will be added.
+// For now, let's ensure it doesn't cause an error if not present.
+if (typeof fetchNotes === 'function') {
+    fetchNotes();
+}
+
+
+// OPEN NOTES -> DIRECTLY TO 3D FOREST (User Request: Hide 2D List)
+if (notesButton) {
+    notesButton.addEventListener('click', () => {
+        // Instead of showing the 2D overlay, we go straight to 3D
+        // Initialize if not ready
+        if (window.init3DForest && !document.getElementById('forest-viewport').innerHTML) {
+            window.init3DForest();
+        }
+
+        // Populate 3D forest with current notes
+        const currentNotes = window.sharedNotes || []; // Ensure we have the latest list
+
+        // Simple check to avoid double-adding if already added? 
+        // Ideally render3D logic handles clearing or we just append.
+        // For now, let's assume init clears or we just toggle.
+
+        // Wait, we need to make sure the forest has data.
+        // Let's re-fetch or use cached.
+
+        // Trigger the toggle
+        if (window.toggle3DView) {
+            window.toggle3DView();
+
+            // If it was the first load, we might need to inject notes
+            // Assuming 'forestState' is a global object or defined elsewhere
+            if (window.forestState && !window.forestState.hasLoadedNotes && currentNotes.length > 0) {
+                // Convert and add existing notes to 3D
+                const forestNotes = document.getElementById('forest-world');
+                if (forestNotes) forestNotes.innerHTML = ''; // Clear existing demo trees/notes
+
+                // Re-add them
+                currentNotes.forEach(noteData => {
+                    window.addNoteTo3D(noteData);
+                });
+                window.forestState.hasLoadedNotes = true;
+            }
+        }
+    });
+}
+
+// Close Notes (2D Overlay - Kept for dev/admin but hidden from flow)
+if (closeNotes) {
+    closeNotes.addEventListener('click', () => {
+        if (notesOverlay) notesOverlay.style.display = 'none';
+    });
+}
+
+// 3D Button in Overlay (Redundant now, but kept if user reverts)
+if (start3dBtn) {
+    start3dBtn.addEventListener('click', () => {
+        if (window.toggle3DView) window.toggle3DView();
+    });
+}
+// End of new Notes System Integration block
+
 const noteInput = document.getElementById('noteInput');
 const sendNoteBtn = document.getElementById('sendNote');
 const notesList = document.getElementById('notesList');
-
-// Toggle UI
-notesBtn.addEventListener('click', () => {
-    notesOverlay.style.display = 'flex';
-    void notesOverlay.offsetWidth;
-    notesOverlay.style.opacity = '1';
-    scrollToBottom();
-});
-
-closeNotesBtn.addEventListener('click', () => {
-    notesOverlay.style.opacity = '0';
-    setTimeout(() => {
-        notesOverlay.style.display = 'none';
-    }, 300);
-});
 
 
 // Send Note
@@ -457,7 +508,7 @@ function checkDebugMode() {
 checkDebugMode();
 
 // Version Display
-const APP_VERSION = "v1.7 - Admin God Mode Enabled";
+const APP_VERSION = "v2.9 - Forest Icon & Clean Meta";
 const versionEl = document.getElementById('versionDisplay');
 if (versionEl) versionEl.innerText = versionEl.innerText = "Versión: " + APP_VERSION;
 

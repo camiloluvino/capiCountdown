@@ -40,24 +40,21 @@ body.night-mode #forest-viewport {
     background-size: 100px 100px;
 }
 
-/* Notes in 3D Space - "Interactive Envelope" Style */
+/* Notes on Trees - "Post-it" Style (v2.0/2.3) */
 .note-3d {
     position: absolute;
-    width: 120px;
-    /* Smaller, like a folded letter */
-    height: 80px;
-    background: #FDFCF5;
+    width: 40px;
+    height: 50px;
+    background: #fff9c4;
+    /* Yellowish post-it */
     border: 1px solid #dcdcdc;
-    border-radius: 4px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    border-radius: 2px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
     cursor: pointer;
-    /* Indicates clickability */
 
-    /* Centered pivot */
     left: 50%;
     top: 50%;
 
-    /* Flex to center a visual "text" hint */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -67,15 +64,18 @@ body.night-mode #forest-viewport {
 
 .note-3d:hover {
     background: #fff;
-    border-color: #bbb;
-    box-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
+    transform: scale(1.2);
+    box-shadow: 0 0 15px rgba(255, 255, 100, 0.8);
+    border-color: #ffd700;
+    z-index: 50;
 }
 
-/* "Lines" to simulate text on the envelope */
+/* "Pin" emoji */
 .note-3d::after {
-    content: "✉️";
-    font-size: 2rem;
-    opacity: 0.6;
+    content: "📌";
+    font-size: 1rem;
+    position: absolute;
+    top: -5px;
 }
 
 body.night-mode .note-3d {
@@ -83,7 +83,7 @@ body.night-mode .note-3d {
     color: #1a1a2e;
 }
 
-/* Note Reading Modal */
+/* Note Reading Modal - Standard */
 #note-reading-modal {
     position: absolute;
     top: 0;
@@ -144,14 +144,12 @@ body.night-mode .note-3d {
 /* Simple Trees (CSS Only) */
 .tree-3d {
     --tree-color: #2E8B57;
-    /* Default fallback */
     position: absolute;
     width: 0;
     height: 0;
     border-left: 60px solid transparent;
     border-right: 60px solid transparent;
     border-bottom: 200px solid var(--tree-color);
-    /* Leaves */
     left: 50%;
     top: 50%;
     transform-origin: bottom center;
@@ -163,9 +161,7 @@ body.night-mode .note-3d {
     width: 20px;
     height: 40px;
     background: #8B4513;
-    /* Trunk */
     bottom: -190px;
-    /* Relative to border-bottom */
     left: -10px;
 }
 
