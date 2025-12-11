@@ -75,12 +75,71 @@ h1 {
     /* Restored shadow size */
 }
 
+/* When both characters appear */
+.capybara-container.both-characters {
+    width: 450px;
+    gap: 30px;
+}
+
 .capybara-img {
     width: 250px;
     height: auto;
     max-width: 100%;
     transition: transform 0.3s ease, opacity 0.5s ease;
     cursor: pointer;
+}
+
+.turtle-img {
+    width: 200px;
+    height: auto;
+    max-width: 100%;
+    transition: transform 0.3s ease, opacity 0.5s ease;
+    cursor: pointer;
+}
+
+/* Turtle-specific animations (slower) */
+.turtle-img.petting {
+    animation: turtleWiggle 0.5s ease-in-out;
+}
+
+@keyframes turtleWiggle {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(0.98) rotate(-1deg);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.turtle-img.happy-bounce {
+    animation: turtleBounce 0.8s ease-in-out;
+}
+
+@keyframes turtleBounce {
+    0% {
+        transform: scale(1) translateY(0);
+    }
+
+    25% {
+        transform: scale(1.05) translateY(-5px);
+    }
+
+    50% {
+        transform: scale(1) translateY(0);
+    }
+
+    75% {
+        transform: scale(1.05) translateY(-3px);
+    }
+
+    100% {
+        transform: scale(1) translateY(0);
+    }
 }
 
 
@@ -940,5 +999,9 @@ body.night-mode .note-message.my-message {
     pointer-events: none;
     z-index: 204;
 }
-.lives-display
- font-size: 1.5rem; margin-top: 5px; letter-spacing: 5px; 
+
+.lives-display {
+    font-size: 1.5rem;
+    margin-top: 5px;
+    letter-spacing: 5px;
+}

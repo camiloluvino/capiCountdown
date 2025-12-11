@@ -199,6 +199,8 @@ function escapeHtml(text) {
 
 // Configuration
 const targetDate = new Date('2026-01-28T00:00:00');
+
+// Capybara images
 const images = [
     'assets/images/capybara.png',          // Relaxed
     'assets/images/capybara_eating.png',   // Eating
@@ -209,12 +211,21 @@ const images = [
     'assets/images/capybara_cooking.png'   // Cooking
 ];
 
-// Preload images
-images.forEach(src => {
+// Turtle images
+const turtleImages = [
+    'assets/images/tortuga-removebg-preview.png',           // Meditating
+    'assets/images/tortuga_reading-removebg-preview.png',   // Reading (wise)
+    'assets/images/tortuga_eating-removebg-preview.png',    // Eating
+    'assets/images/tortuga_sleeping-removebg-preview.png'   // Sleeping
+];
+
+// Preload all images
+[...images, ...turtleImages].forEach(src => {
     const img = new Image();
     img.src = src;
 });
 
+// Capybara messages (social, relaxed, fun)
 const zenMessages = [
     "Ya falta menos que ayer.",
     "El tiempo avanza, quieras o no.",
@@ -253,6 +264,30 @@ const zenMessages = [
     "El 28 brillará más que nunca."
 ];
 
+// Turtle messages (wise, contemplative, philosophical)
+const turtleMessages = [
+    "La paciencia es la compañera del sabio.",
+    "Cada paso lento es un paso seguro.",
+    "El tiempo no tiene prisa, ¿por qué habrías de tenerla tú?",
+    "La sabiduría crece con la quietud.",
+    "Observa, reflexiona, avanza.",
+    "En la calma se encuentra la verdad.",
+    "La vida es larga para quien sabe esperar.",
+    "No hay prisa en el camino del sabio.",
+    "La tortuga llega antes que el impaciente.",
+    "Medita en el ahora, el futuro vendrá.",
+    "El sabio espera, el necio corre.",
+    "Cada día es una lección de paciencia.",
+    "La contemplación es el sendero.",
+    "Lento pero constante, así se llega.",
+    "El tiempo es el maestro más antiguo.",
+    "Respira profundo, el 28 está escrito.",
+    "La serenidad es tu mayor fortaleza.",
+    "Observa el horizonte sin ansiedad.",
+    "La espera es meditación en movimiento.",
+    "Cada amanecer es un regalo."
+];
+
 // Intro Animation Logic
 function playIntro() {
     const overlay = document.getElementById('intro-overlay');
@@ -279,8 +314,10 @@ function playIntro() {
 // Petting Interaction Logic
 function setupPetting() {
     const capy = document.getElementById('capyImage');
+    const turtle = document.getElementById('turtleImage');
     const container = document.querySelector('.capybara-container');
 
+    // Petting for Capybara
     capy.addEventListener('click', (e) => {
         // 1. Wiggle Animation
         capy.classList.remove('petting');
@@ -288,26 +325,41 @@ function setupPetting() {
         capy.classList.add('petting');
 
         // 2. Spawn Hearts
-        const hearts = ['❤️', '💖', '💗', '💕'];
-        const heart = document.createElement('div');
-        heart.className = 'heart';
-        heart.innerText = hearts[Math.floor(Math.random() * hearts.length)];
-
-        // Position heart near click, but relative to container
-        const rect = container.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-
-        heart.style.left = (x - 10) + 'px'; // Center
-        heart.style.top = (y - 20) + 'px';
-
-        container.appendChild(heart);
-
-        // Cleanup heart
-        setTimeout(() => {
-            heart.remove();
-        }, 1000);
+        spawnHeart(container, e);
     });
+
+    // Petting for Turtle (slower, wiser reaction)
+    turtle.addEventListener('click', (e) => {
+        // 1. Gentle Wiggle Animation
+        turtle.classList.remove('petting');
+        void turtle.offsetWidth; // Trigger reflow
+        turtle.classList.add('petting');
+
+        // 2. Spawn Hearts
+        spawnHeart(container, e);
+    });
+}
+
+function spawnHeart(container, event) {
+    const hearts = ['❤️', '💖', '💗', '💕'];
+    const heart = document.createElement('div');
+    heart.className = 'heart';
+    heart.innerText = hearts[Math.floor(Math.random() * hearts.length)];
+
+    // Position heart near click, but relative to container
+    const rect = container.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+
+    heart.style.left = (x - 10) + 'px'; // Center
+    heart.style.top = (y - 20) + 'px';
+
+    container.appendChild(heart);
+
+    // Cleanup heart
+    setTimeout(() => {
+        heart.remove();
+    }, 1000);
 }
 
 // State
@@ -324,22 +376,77 @@ function getDaysLeft(baseDate) {
 
 function updateCapybaraMood(daysLeft) {
     const imgElement = document.getElementById('capyImage');
+    const turtleElement = document.getElementById('turtleImage');
     const msgElement = document.getElementById('dailyMessage');
+    const container = document.querySelector('.capybara-container');
 
-    // Cycle logic: Use daysLeft to pick an image index
-    // We use daysLeft so it's consistent for everyone on that specific day
-    const index = daysLeft % images.length;
-    const msgIndex = daysLeft % zenMessages.length;
+    // Determine which character(s) to show
+    // Multiples of 3: Both together
+    // Other even days: Capybara only
+    // Odd days: Turtle only
+    const isBothDay = (daysLeft % 3 === 0);
+    const isCapyDay = !isBothDay && (daysLeft % 2 === 0);
+    const isTurtleDay = !isBothDay && (daysLeft % 2 !== 0);
+
+    let imageSrc, turtleSrc, message;
+    let showCapy, showTurtle;
+
+    if (isBothDay) {
+        // Both characters day
+        const capyIndex = daysLeft % images.length;
+        const turtleIndex = daysLeft % turtleImages.length;
+        imageSrc = images[capyIndex];
+        turtleSrc = turtleImages[turtleIndex];
+        // Mix messages from both
+        const allMessages = [...zenMessages, ...turtleMessages];
+        const msgIndex = daysLeft % allMessages.length;
+        message = allMessages[msgIndex];
+        showCapy = true;
+        showTurtle = true;
+        container.classList.add('both-characters');
+    } else if (isCapyDay) {
+        // Capybara only
+        const index = daysLeft % images.length;
+        const msgIndex = daysLeft % zenMessages.length;
+        imageSrc = images[index];
+        message = zenMessages[msgIndex];
+        showCapy = true;
+        showTurtle = false;
+        container.classList.remove('both-characters');
+    } else {
+        // Turtle only
+        const index = daysLeft % turtleImages.length;
+        const msgIndex = daysLeft % turtleMessages.length;
+        turtleSrc = turtleImages[index];
+        message = turtleMessages[msgIndex];
+        showCapy = false;
+        showTurtle = true;
+        container.classList.remove('both-characters');
+    }
 
     // Fade out, swap, fade in
     imgElement.style.opacity = '0';
+    turtleElement.style.opacity = '0';
     msgElement.style.opacity = '0';
 
     setTimeout(() => {
-        imgElement.src = images[index];
-        msgElement.innerText = zenMessages[msgIndex];
+        if (showCapy) {
+            imgElement.src = imageSrc;
+            imgElement.style.display = '';
+            imgElement.style.opacity = '1';
+        } else {
+            imgElement.style.display = 'none';
+        }
 
-        imgElement.style.opacity = '1';
+        if (showTurtle) {
+            turtleElement.src = turtleSrc;
+            turtleElement.style.display = '';
+            turtleElement.style.opacity = '1';
+        } else {
+            turtleElement.style.display = 'none';
+        }
+
+        msgElement.innerText = message;
         msgElement.style.opacity = '1';
     }, 300);
 }
