@@ -51,18 +51,21 @@
     color: white;
 }
 
+/* Make adminPanel a positioning context */
+#adminPanel {
+    position: relative;
+}
+
 .admin-edit-form {
     background: #fff;
     border: 1px solid #ccc;
     padding: 10px;
     margin-top: 10px;
-    position: absolute;
-    /* Overlay */
-    bottom: 0px;
-    left: 0;
+    position: relative;
     width: 100%;
-    box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
     z-index: 100;
+    box-sizing: border-box;
 }
 
 .admin-edit-form textarea {

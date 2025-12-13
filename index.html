@@ -24,9 +24,10 @@
     <div class="meadow"></div>
     <!-- Version footer removed per user request -->
     <button class="theme-toggle" id="themeToggle" title="Cambiar tema">🌙</button>
-    <button class="play-button" id="playButton" title="Jugar: La Cesta de Regalos">🎮</button>
+    <button class="play-button" id="playButton" title="Jugar: La Cesta de Regalos">🧺</button>
+    <button class="river-button" id="riverButton" title="Jugar: Cruzando el Río">🌊</button>
 
-    <!-- Game Overlay -->
+    <!-- Game Overlay (Cesta de Regalos) -->
     <div id="game-overlay">
         <div class="game-ui">
             <div class="score-total">Puntos: <span id="score">0</span></div>
@@ -37,6 +38,58 @@
         <button class="game-close" id="closeGame">✕</button>
         <div id="game-player"></div>
         <!-- Items will be spawned here -->
+    </div>
+
+    <!-- River Game Overlay (Cruzando el Río) -->
+    <div id="river-overlay">
+        <button class="game-close" id="closeRiver">✕</button>
+
+        <!-- River Game Area - Horizontal Layout -->
+        <div id="river-game-area">
+            <!-- Left Shore (Start) -->
+            <div class="river-shore shore-left">
+                <div class="shore-grass"></div>
+            </div>
+
+            <!-- The River -->
+            <div class="river-water-horizontal"></div>
+
+            <!-- Right Shore (Goal) -->
+            <div class="river-shore shore-right">
+                <div class="shore-grass"></div>
+                <div class="shore-goal">🌺</div>
+            </div>
+
+            <!-- Player: Capybara with Turtle -->
+            <div id="river-player">
+                <img src="assets/images/capybara.png" class="river-capy" alt="Capibara">
+                <img src="assets/images/tortuga-removebg-preview.png" class="river-turtle" alt="Tortuga">
+            </div>
+
+            <!-- Obstacles spawn here dynamically -->
+        </div>
+
+        <!-- UI Overlay -->
+        <div class="river-ui-horizontal">
+            <div class="stability-container-h">
+                <span class="stability-label">🐢 Equilibrio</span>
+                <div class="stability-bar-h">
+                    <div class="stability-fill" id="stabilityFill"></div>
+                </div>
+            </div>
+            <div class="progress-container">
+                <span class="progress-label">Progreso</span>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+            <div class="crosses-display">
+                Cruces: <span id="crossCount">0</span> 🌸
+            </div>
+        </div>
+
+        <!-- Instructions -->
+        <div id="river-hint">↑ ↓ Sube o baja para esquivar</div>
     </div>
 
     <!-- Feeding Menu -->

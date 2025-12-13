@@ -1,5 +1,5 @@
 ﻿// --- FIREBASE CONFIGURATION ---
-// ⚠️ IMPORTANTE: Pega aquí abajo el código que te dio Firebase
+// ?? IMPORTANTE: Pega aqu� abajo el c�digo que te dio Firebase
 // Reemplaza todo el objeto firebaseConfig con el tuyo.
 const firebaseConfig = {
     apiKey: "AIzaSyCHsBs2yjkX290sxePbpz8ub5KiEV482Xk",
@@ -20,7 +20,7 @@ try {
     database = firebase.database();
     console.log("Firebase inicializado");
 } catch (e) {
-    console.error("Error inicializando Firebase (¿Falta la config?):", e);
+    console.error("Error inicializando Firebase (�Falta la config?):", e);
 }
 
 // --- Notes System Integration ---
@@ -141,11 +141,11 @@ if (database) {
     notesRef.once('value').then(snapshot => {
         // Only show empty message if no notes exist
         if (!snapshot.exists()) {
-            notesList.innerHTML = '<div class="note-message system-message">Escribe la primera nota... ✨</div>';
+            notesList.innerHTML = '<div class="note-message system-message">Escribe la primera nota... ?</div>';
         }
     }).catch(e => {
-        console.error("Error conexión inicial:", e);
-        notesList.innerHTML = '<div class="note-message system-message" style="color:red">Error de conexión</div>';
+        console.error("Error conexi�n inicial:", e);
+        notesList.innerHTML = '<div class="note-message system-message" style="color:red">Error de conexi�n</div>';
     });
 
     notesRef.limitToLast(50).on('child_added', (snapshot) => {
@@ -230,61 +230,61 @@ const zenMessages = [
     "Ya falta menos que ayer.",
     "El tiempo avanza, quieras o no.",
     "Todo llega a su debido tiempo.",
-    "Un día más, un día menos.",
+    "Un d�a m�s, un d�a menos.",
     "La espera es parte del proceso.",
     "El 28 se acerca sin prisa pero sin pausa.",
-    "Guardando energía para el gran día.",
+    "Guardando energ�a para el gran d�a.",
     "Paciencia: el arte de dejar que el tiempo pase.",
-    "Solo es cuestión de tiempo.",
+    "Solo es cuesti�n de tiempo.",
     "El calendario no se detiene.",
     "Lo bueno se hace esperar.",
     "Cada segundo cuenta.",
     "Respira, ya casi estamos.",
-    "La meta está más cerca.",
+    "La meta est� m�s cerca.",
     "Disfruta el camino.",
-    "Hoy es un paso más.",
+    "Hoy es un paso m�s.",
     "La paciencia es amarga, pero su fruto es dulce.",
-    "No cuentes los días, haz que los días cuenten.",
+    "No cuentes los d�as, haz que los d�as cuenten.",
     "Todo llega para quien sabe esperar.",
-    "Confía en el tiempo.",
-    "Un día a la vez.",
-    "La calma antes de la celebración.",
+    "Conf�a en el tiempo.",
+    "Un d�a a la vez.",
+    "La calma antes de la celebraci�n.",
     "Preparando motores...",
     "Siente la brisa de la espera.",
-    "Mantén la visión en el 28.",
-    "Pequeños pasos, grandes distancias.",
-    "La espera construye el carácter.",
+    "Mant�n la visi�n en el 28.",
+    "Peque�os pasos, grandes distancias.",
+    "La espera construye el car�cter.",
     "Ya casi puedes saborearlo.",
     "Tranquilidad y buenos alimentos.",
     "El futuro se construye hoy.",
     "Nada es eterno, ni siquiera la espera.",
-    "Sonríe, el tiempo está de tu lado.",
-    "La mejor compañía es la calma.",
-    "Observa cómo pasan las nubes.",
-    "El 28 brillará más que nunca."
+    "Sonr�e, el tiempo est� de tu lado.",
+    "La mejor compa��a es la calma.",
+    "Observa c�mo pasan las nubes.",
+    "El 28 brillar� m�s que nunca."
 ];
 
 // Turtle messages (wise, contemplative, philosophical)
 const turtleMessages = [
-    "La paciencia es la compañera del sabio.",
+    "La paciencia es la compa�era del sabio.",
     "Cada paso lento es un paso seguro.",
-    "El tiempo no tiene prisa, ¿por qué habrías de tenerla tú?",
-    "La sabiduría crece con la quietud.",
+    "El tiempo no tiene prisa, �por qu� habr�as de tenerla t�?",
+    "La sabidur�a crece con la quietud.",
     "Observa, reflexiona, avanza.",
     "En la calma se encuentra la verdad.",
     "La vida es larga para quien sabe esperar.",
     "No hay prisa en el camino del sabio.",
     "La tortuga llega antes que el impaciente.",
-    "Medita en el ahora, el futuro vendrá.",
+    "Medita en el ahora, el futuro vendr�.",
     "El sabio espera, el necio corre.",
-    "Cada día es una lección de paciencia.",
-    "La contemplación es el sendero.",
-    "Lento pero constante, así se llega.",
-    "El tiempo es el maestro más antiguo.",
-    "Respira profundo, el 28 está escrito.",
+    "Cada d�a es una lecci�n de paciencia.",
+    "La contemplaci�n es el sendero.",
+    "Lento pero constante, as� se llega.",
+    "El tiempo es el maestro m�s antiguo.",
+    "Respira profundo, el 28 est� escrito.",
     "La serenidad es tu mayor fortaleza.",
     "Observa el horizonte sin ansiedad.",
-    "La espera es meditación en movimiento.",
+    "La espera es meditaci�n en movimiento.",
     "Cada amanecer es un regalo."
 ];
 
@@ -341,7 +341,7 @@ function setupPetting() {
 }
 
 function spawnHeart(container, event) {
-    const hearts = ['❤️', '💖', '💗', '💕'];
+    const hearts = ['??', '??', '??', '??'];
     const heart = document.createElement('div');
     heart.className = 'heart';
     heart.innerText = hearts[Math.floor(Math.random() * hearts.length)];
@@ -483,7 +483,7 @@ function renderTally(days, animateRemoval = false) {
         container.appendChild(fallingStick);
     }
 
-    // document.getElementById('daysText').innerText = `Faltan ${days} días`;
+    // document.getElementById('daysText').innerText = `Faltan ${days} d�as`;
 }
 
 function createBundle(count, isCompleted, parent) {
@@ -617,7 +617,7 @@ checkDebugMode();
 // Version Display
 const APP_VERSION = "v3.2 - Fix DB Error";
 const versionEl = document.getElementById('versionDisplay');
-if (versionEl) versionEl.innerText = versionEl.innerText = "Versión: " + APP_VERSION;
+if (versionEl) versionEl.innerText = versionEl.innerText = "Versi�n: " + APP_VERSION;
 
 // Admin Panel Logic
 const adminList = document.getElementById('adminNotesList');
@@ -655,8 +655,8 @@ function loadAdminNotes() {
                     ${shortText}
                 </div>
                 <div class="admin-btn-group">
-                    <button class="admin-btn edit-btn" data-key="${key}">✏️</button>
-                    <button class="admin-btn delete-btn" data-key="${key}">🗑️</button>
+                    <button class="admin-btn edit-btn" data-key="${key}">??</button>
+                    <button class="admin-btn delete-btn" data-key="${key}">???</button>
                 </div>
             `;
 
@@ -709,13 +709,13 @@ if (saveEditBtn) {
 
             // Optional: Refresh Main View?
             // Page reload might be easiest to sync everything
-            if (confirm("Recargar página para ver cambios?")) location.reload();
+            if (confirm("Recargar p�gina para ver cambios?")) location.reload();
         });
     });
 }
 
 function deleteAdminNote(key) {
-    if (confirm('¿Seguro que quieres borrar esta nota para siempre?')) {
+    if (confirm('�Seguro que quieres borrar esta nota para siempre?')) {
         database.ref('shared_notes/' + key).remove().then(() => {
             loadAdminNotes();
             // location.reload(); // Optional
@@ -744,7 +744,7 @@ const bodyTheme = document.body;
 themeToggle.addEventListener('click', () => {
     bodyTheme.classList.toggle('night-mode');
     const isNight = bodyTheme.classList.contains('night-mode');
-    themeToggle.innerText = isNight ? '☀️' : '🌙';
+    themeToggle.innerText = isNight ? '??' : '??';
 
     // Optional: Switch Capybara to sleeping if night mode is on
     // But only if we want to override the daily mood. 
@@ -775,7 +775,7 @@ function feedCapybara(foodEmoji) {
         capy.classList.add('happy-bounce');
 
         // Reaction: Text Bubble
-        const phrases = ['¡Ñam!', '¡Rico!', '¡Gracias!', '😋', '🍊'];
+        const phrases = ['��am!', '�Rico!', '�Gracias!', '??', '??'];
         const text = phrases[Math.floor(Math.random() * phrases.length)];
 
         const bubble = document.createElement('div');
@@ -807,7 +807,7 @@ function feedCapybara(foodEmoji) {
             setTimeout(() => {
                 const heart = document.createElement('div');
                 heart.className = 'heart';
-                heart.innerText = '😋';
+                heart.innerText = '??';
 
                 // Center in container
                 const containerRect = container.getBoundingClientRect();
@@ -924,9 +924,9 @@ function updateScoreboard() {
     let heartsHTML = '';
     for (let i = 0; i < 5; i++) {
         if (i < lives) {
-            heartsHTML += '❤️';
+            heartsHTML += '??';
         } else {
-            heartsHTML += '💔'; // Broken or empty heart
+            heartsHTML += '??'; // Broken or empty heart
         }
     }
     livesContainer.innerHTML = heartsHTML;
@@ -948,12 +948,12 @@ function spawnItem() {
     if (!gameActive) return;
 
     const types = [
-        { text: '🍎', score: 10, speed: 2, type: 'fruit' },
-        { text: '🍊', score: 10, speed: 2.5, type: 'fruit' },
-        { text: '🍉', score: 10, speed: 3, type: 'fruit' },
-        { text: '🌸', score: 20, speed: 1.5, type: 'rare' },
-        { text: '⭐️', score: 50, speed: 3.5, type: 'rare' },
-        { text: '🍂', score: 100, speed: 1, type: 'leaf' } // High score!
+        { text: '??', score: 10, speed: 2, type: 'fruit' },
+        { text: '??', score: 10, speed: 2.5, type: 'fruit' },
+        { text: '??', score: 10, speed: 3, type: 'fruit' },
+        { text: '??', score: 20, speed: 1.5, type: 'rare' },
+        { text: '??', score: 50, speed: 3.5, type: 'rare' },
+        { text: '??', score: 100, speed: 1, type: 'leaf' } // High score!
     ];
 
     const randomType = types[Math.floor(Math.random() * types.length)];
@@ -1035,7 +1035,7 @@ function gameLoop() {
             updateScoreboard();
 
             // Visual feedback for miss
-            showFeedback(item.x, window.innerHeight - 50, '💔');
+            showFeedback(item.x, window.innerHeight - 50, '??');
 
             item.element.remove();
             items.splice(i, 1);
@@ -1069,8 +1069,8 @@ function gameOver() {
     msg.style.zIndex = '300';
 
     msg.innerHTML = `
-        <h2 style="color: #556B2F; margin-top:0;">¡Juego Terminado!</h2>
-        <p style="font-size: 1.5rem; margin: 10px 0;">Puntuación Final: <b>${score}</b></p>
+        <h2 style="color: #556B2F; margin-top:0;">�Juego Terminado!</h2>
+        <p style="font-size: 1.5rem; margin: 10px 0;">Puntuaci�n Final: <b>${score}</b></p>
         <button id="restartBtn" style="
             background: #8FBC8F; 
             border: none; 
@@ -1166,7 +1166,7 @@ window.save3DNote = function (text) {
         if (error) {
             alert("Error de Firebase: " + error.message);
         } else {
-            console.log("Nota guardada con éxito");
+            console.log("Nota guardada con �xito");
         }
     });
 
@@ -1181,3 +1181,482 @@ window.save3DNote = function (text) {
         return userId;
     }
 };
+
+// ==========================================
+// RIVER GAME - Cruzando el R�o (Horizontal Zen Version)
+// ==========================================
+
+const RiverGame = {
+    isRunning: false,
+    animationId: null,
+
+    // Player position (Y is vertical movement, X is auto-progress)
+    playerY: 50, // percentage from top
+    playerX: 100, // pixels from left (starts at shore)
+
+    // Game state
+    stability: 100,
+    progress: 0, // 0 to 100 (crossing progress)
+    crosses: 0, // successful crossings
+    obstacles: [],
+    powerups: [],
+    lastObstacleTime: 0,
+    lastPowerupTime: 0,
+
+    // Game dimensions
+    riverStart: 80, // left shore width
+    riverEnd: 0, // calculated on start
+
+    // Game elements
+    overlay: null,
+    gameArea: null,
+    player: null,
+    turtle: null,
+    stabilityFill: null,
+    progressFill: null,
+    crossCount: null,
+
+    // Obstacle types - gentle damage (using universally supported emojis)
+    obstacleTypes: [
+        { emoji: '🪵', damage: 12 },
+        { emoji: '🪨', damage: 15 },
+        { emoji: '💫', damage: 18 },
+    ],
+
+    // Power-up types
+    powerupTypes: [
+        { emoji: '🍊', heal: 15 },
+        { emoji: '🌸', heal: 25 },
+        { emoji: '🍃', heal: 20 },
+    ],
+
+    init() {
+        this.overlay = document.getElementById('river-overlay');
+        this.gameArea = document.getElementById('river-game-area');
+        this.player = document.getElementById('river-player');
+        this.turtle = this.player?.querySelector('.river-turtle');
+        this.stabilityFill = document.getElementById('stabilityFill');
+        this.progressFill = document.getElementById('progressFill');
+        this.crossCount = document.getElementById('crossCount');
+
+        // Button listeners
+        document.getElementById('riverButton')?.addEventListener('click', () => this.start());
+        document.getElementById('closeRiver')?.addEventListener('click', () => this.end());
+
+        // Keyboard controls
+        document.addEventListener('keydown', (e) => this.handleKeyDown(e));
+        document.addEventListener('keyup', (e) => this.handleKeyUp(e));
+
+        // Touch controls for mobile
+        this.setupTouchControls();
+    },
+
+    setupTouchControls() {
+        if (!this.overlay) return;
+
+        this.overlay.addEventListener('touchmove', (e) => {
+            if (!this.isRunning) return;
+            const touchY = e.touches[0].clientY;
+            const screenHeight = window.innerHeight;
+            // Map touch Y to player Y position (15-85%)
+            this.playerY = Math.max(15, Math.min(85, (touchY / screenHeight) * 100));
+        }, { passive: true });
+    },
+
+    keysPressed: {},
+
+    handleKeyDown(e) {
+        if (!this.isRunning) return;
+        this.keysPressed[e.key] = true;
+
+        // Prevent page scrolling
+        if (['ArrowUp', 'ArrowDown'].includes(e.key)) {
+            e.preventDefault();
+        }
+    },
+
+    handleKeyUp(e) {
+        this.keysPressed[e.key] = false;
+    },
+
+    start() {
+        // Calculate river dimensions
+        const screenWidth = window.innerWidth;
+        this.riverStart = 100; // left shore + some buffer
+        this.riverEnd = screenWidth - 100; // right shore
+
+        // Reset game state
+        this.stability = 100;
+        this.progress = 0;
+        this.playerY = 50;
+        this.playerX = this.riverStart;
+        this.obstacles = [];
+        this.powerups = [];
+        this.lastObstacleTime = 0;
+        this.lastPowerupTime = 0;
+        this.isRunning = true;
+
+        // Clear any existing elements
+        this.clearGameElements();
+
+        // Show overlay
+        this.overlay.style.display = 'flex';
+        setTimeout(() => {
+            this.overlay.style.opacity = '1';
+        }, 10);
+
+        // Update UI
+        this.updateUI();
+        this.updatePlayerPosition();
+
+        // Start game loop
+        this.lastFrameTime = performance.now();
+        this.gameLoop();
+    },
+
+    end() {
+        this.isRunning = false;
+        if (this.animationId) {
+            cancelAnimationFrame(this.animationId);
+        }
+
+        this.overlay.style.opacity = '0';
+        setTimeout(() => {
+            this.overlay.style.display = 'none';
+            this.clearGameElements();
+        }, 500);
+    },
+
+    clearGameElements() {
+        document.querySelectorAll('.river-obstacle, .river-powerup, .splash, .celebration').forEach(el => el.remove());
+        this.obstacles = [];
+        this.powerups = [];
+    },
+
+    gameLoop() {
+        if (!this.isRunning) return;
+
+        const now = performance.now();
+        const deltaTime = (now - this.lastFrameTime) / 1000;
+        this.lastFrameTime = now;
+
+        // Handle vertical input (up/down only)
+        this.handleInput(deltaTime);
+
+        // Auto-move forward (left to right) - very slow, zen pace
+        const forwardSpeed = 40; // pixels per second
+        this.playerX += forwardSpeed * deltaTime;
+
+        // Calculate progress percentage
+        const totalDistance = this.riverEnd - this.riverStart;
+        this.progress = Math.min(100, ((this.playerX - this.riverStart) / totalDistance) * 100);
+
+        // Spawn obstacles (coming from ahead)
+        if (now - this.lastObstacleTime > 2000) {
+            this.spawnObstacle();
+            this.lastObstacleTime = now;
+        }
+
+        // Spawn powerups occasionally
+        if (now - this.lastPowerupTime > 3500) {
+            this.spawnPowerup();
+            this.lastPowerupTime = now;
+        }
+
+        // Update obstacles and powerups
+        this.updateObstacles(deltaTime);
+        this.updatePowerups(deltaTime);
+
+        // Update UI
+        this.updateUI();
+        this.updatePlayerPosition();
+
+        // Check win condition
+        if (this.progress >= 100) {
+            this.successCrossing();
+            return;
+        }
+
+        // Check lose condition
+        if (this.stability <= 0) {
+            this.failCrossing();
+            return;
+        }
+
+        this.animationId = requestAnimationFrame(() => this.gameLoop());
+    },
+
+    handleInput(deltaTime) {
+        const moveSpeed = 120; // pixels-ish per second (for percentage)
+
+        if (this.keysPressed['ArrowUp'] || this.keysPressed['w']) {
+            this.playerY -= moveSpeed * deltaTime;
+        }
+        if (this.keysPressed['ArrowDown'] || this.keysPressed['s']) {
+            this.playerY += moveSpeed * deltaTime;
+        }
+
+        // Clamp position
+        this.playerY = Math.max(15, Math.min(85, this.playerY));
+    },
+
+    updatePlayerPosition() {
+        if (!this.player) return;
+        this.player.style.left = this.playerX + 'px';
+        this.player.style.top = this.playerY + '%';
+    },
+
+    spawnObstacle() {
+        const type = this.obstacleTypes[Math.floor(Math.random() * this.obstacleTypes.length)];
+        const obstacle = document.createElement('div');
+        obstacle.className = 'river-obstacle';
+        obstacle.innerText = type.emoji;
+
+        // Spawn ahead of player (to the right)
+        obstacle.style.left = (this.playerX + 400 + Math.random() * 200) + 'px';
+        obstacle.style.top = (15 + Math.random() * 70) + '%';
+
+        this.gameArea.appendChild(obstacle);
+        this.obstacles.push({
+            element: obstacle,
+            x: parseFloat(obstacle.style.left),
+            y: parseFloat(obstacle.style.top),
+            damage: type.damage
+        });
+    },
+
+    spawnPowerup() {
+        const type = this.powerupTypes[Math.floor(Math.random() * this.powerupTypes.length)];
+        const powerup = document.createElement('div');
+        powerup.className = 'river-powerup';
+        powerup.innerText = type.emoji;
+
+        powerup.style.left = (this.playerX + 350 + Math.random() * 200) + 'px';
+        powerup.style.top = (15 + Math.random() * 70) + '%';
+
+        this.gameArea.appendChild(powerup);
+        this.powerups.push({
+            element: powerup,
+            x: parseFloat(powerup.style.left),
+            y: parseFloat(powerup.style.top),
+            heal: type.heal
+        });
+    },
+
+    updateObstacles(deltaTime) {
+        // Obstacles drift slowly (river current - toward player)
+        const driftSpeed = 20; // very slow
+
+        for (let i = this.obstacles.length - 1; i >= 0; i--) {
+            const obs = this.obstacles[i];
+            obs.x -= driftSpeed * deltaTime;
+            obs.element.style.left = obs.x + 'px';
+
+            // Check collision
+            if (this.checkCollision(obs)) {
+                this.hitObstacle(obs);
+                obs.element.remove();
+                this.obstacles.splice(i, 1);
+                continue;
+            }
+
+            // Remove if behind player (passed)
+            if (obs.x < this.playerX - 100) {
+                obs.element.remove();
+                this.obstacles.splice(i, 1);
+            }
+        }
+    },
+
+    updatePowerups(deltaTime) {
+        const driftSpeed = 15;
+
+        for (let i = this.powerups.length - 1; i >= 0; i--) {
+            const pw = this.powerups[i];
+            pw.x -= driftSpeed * deltaTime;
+            pw.element.style.left = pw.x + 'px';
+
+            if (this.checkCollision(pw)) {
+                this.collectPowerup(pw);
+                pw.element.remove();
+                this.powerups.splice(i, 1);
+                continue;
+            }
+
+            if (pw.x < this.playerX - 100) {
+                pw.element.remove();
+                this.powerups.splice(i, 1);
+            }
+        }
+    },
+
+    checkCollision(item) {
+        if (!this.player) return false;
+        const playerRect = this.player.getBoundingClientRect();
+        const itemRect = item.element.getBoundingClientRect();
+
+        // Smaller hitbox for more forgiving collisions
+        const padding = 15;
+        return !(playerRect.right - padding < itemRect.left ||
+            playerRect.left + padding > itemRect.right ||
+            playerRect.bottom - padding < itemRect.top ||
+            playerRect.top + padding > itemRect.bottom);
+    },
+
+    hitObstacle(obstacle) {
+        this.stability -= obstacle.damage;
+        this.stability = Math.max(0, this.stability);
+
+        // Turtle wobble
+        if (this.turtle) {
+            this.turtle.classList.add('wobble');
+            setTimeout(() => this.turtle.classList.remove('wobble'), 300);
+        }
+
+        this.showFeedback('??', this.player.offsetLeft + 50, this.player.offsetTop);
+    },
+
+    collectPowerup(powerup) {
+        this.stability = Math.min(100, this.stability + powerup.heal);
+        this.showFeedback('??', this.player.offsetLeft + 50, this.player.offsetTop);
+    },
+
+    showFeedback(emoji, x, y) {
+        const feedback = document.createElement('div');
+        feedback.style.cssText = `
+            position: absolute;
+            left: ${x}px;
+            top: ${y}px;
+            font-size: 2rem;
+            pointer-events: none;
+            z-index: 220;
+        `;
+        feedback.innerText = emoji;
+
+        feedback.animate([
+            { transform: 'translateY(0) scale(1)', opacity: 1 },
+            { transform: 'translateY(-30px) scale(1.3)', opacity: 0 }
+        ], { duration: 600, easing: 'ease-out' });
+
+        this.gameArea.appendChild(feedback);
+        setTimeout(() => feedback.remove(), 600);
+    },
+
+    updateUI() {
+        if (this.stabilityFill) {
+            this.stabilityFill.style.width = this.stability + '%';
+
+            // Color based on stability
+            if (this.stability > 60) {
+                this.stabilityFill.style.background = 'linear-gradient(to right, #7BAE7F, #A8C686)';
+            } else if (this.stability > 30) {
+                this.stabilityFill.style.background = 'linear-gradient(to right, #C9A86C, #E8C872)';
+            } else {
+                this.stabilityFill.style.background = 'linear-gradient(to right, #C98A6C, #E89272)';
+            }
+        }
+
+        if (this.progressFill) {
+            this.progressFill.style.width = this.progress + '%';
+        }
+
+        if (this.crossCount) {
+            this.crossCount.innerText = this.crosses;
+        }
+    },
+
+    successCrossing() {
+        this.isRunning = false;
+        this.crosses++;
+
+        // Celebration effect
+        this.showCelebration();
+
+        // Ask to continue
+        setTimeout(() => {
+            const again = confirm(`?? �Cruzaste el r�o! ??\n\nCruces completados: ${this.crosses}\n\n�Ayudar a la tortuga a cruzar de vuelta?`);
+            if (again) {
+                this.resetForNextCrossing();
+            } else {
+                this.end();
+            }
+        }, 1500);
+    },
+
+    showCelebration() {
+        const emojis = ['??', '?', '??', '??'];
+        for (let i = 0; i < 8; i++) {
+            setTimeout(() => {
+                const celebration = document.createElement('div');
+                celebration.className = 'celebration';
+                celebration.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+                celebration.style.cssText = `
+                    position: absolute;
+                    left: ${this.playerX + Math.random() * 100 - 50}px;
+                    top: ${this.player.offsetTop + Math.random() * 60 - 30}px;
+                    font-size: 2rem;
+                    pointer-events: none;
+                    z-index: 220;
+                `;
+
+                celebration.animate([
+                    { transform: 'translateY(0) scale(0.5)', opacity: 1 },
+                    { transform: 'translateY(-50px) scale(1.5)', opacity: 0 }
+                ], { duration: 1000, easing: 'ease-out' });
+
+                this.gameArea.appendChild(celebration);
+                setTimeout(() => celebration.remove(), 1000);
+            }, i * 100);
+        }
+    },
+
+    resetForNextCrossing() {
+        // Reset position to start
+        this.playerX = this.riverStart;
+        this.playerY = 50;
+        this.progress = 0;
+        this.stability = 100;
+        this.clearGameElements();
+        this.isRunning = true;
+        this.lastFrameTime = performance.now();
+        this.gameLoop();
+    },
+
+    failCrossing() {
+        this.isRunning = false;
+
+        // Splash effect
+        const splash = document.createElement('div');
+        splash.className = 'splash';
+        splash.innerText = '??';
+        splash.style.left = this.playerX + 'px';
+        splash.style.top = this.player.offsetTop + 'px';
+        this.gameArea.appendChild(splash);
+
+        // Hide turtle briefly
+        if (this.turtle) {
+            this.turtle.style.opacity = '0';
+        }
+
+        // Gentle message
+        setTimeout(() => {
+            if (this.turtle) {
+                this.turtle.style.opacity = '1';
+            }
+
+            const again = confirm(`?? La tortuga cay� al agua...\n\nPero las tortugas saben nadar un poco.\n�Intentarlo de nuevo?`);
+            if (again) {
+                this.resetForNextCrossing();
+            } else {
+                this.end();
+            }
+        }, 800);
+    }
+};
+
+// Initialize River Game when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+    RiverGame.init();
+});
+
+

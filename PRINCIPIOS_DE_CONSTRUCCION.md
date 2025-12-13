@@ -35,5 +35,12 @@ El proyecto **SIEMPRE** debe mantener un "Modo Desarrollador" accesible pero dis
     *   **Problema Común:** A menudo trabajamos en `master`, pero GitHub Pages despliega desde `gh-pages`. Esto causa que los cambios no se vean reflejados en la web.
     *   **Solución:** Siempre verificar `git branch -a`. Si existe `gh-pages`, al terminar una versión estable, ejecutar explícitamente: `git push origin master:gh-pages`.
 
+## 5. Verificación y Testing 🧪
+*   **NO usar navegador automático por defecto:** El `browser_subagent` es **lento y engorroso**. El usuario prefiere probar la UI él mismo.
+*   **Excepciones:** Solo usar automatización del navegador si:
+    *   El usuario lo solicita explícitamente ("muéstrame cómo se ve", "captura un screenshot")
+    *   Se requiere interacción compleja que el usuario no puede hacer fácilmente (ej. APIs externas, flujos multi-paso)
+*   **Regla de oro:** Después de implementar cambios en la UI, simplemente informar al usuario y dejar que él pruebe.
+
 ---
 *Este archivo debe ser leído al inicio de cada nueva sesión de desarrollo para alinear el contexto.*

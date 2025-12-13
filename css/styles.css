@@ -1005,3 +1005,510 @@ body.night-mode .note-message.my-message {
     margin-top: 5px;
     letter-spacing: 5px;
 }
+
+/* ==========================================
+   RIVER GAME - Cruzando el Río
+   ========================================== */
+
+.river-button {
+    position: fixed;
+    top: 30px;
+    left: 130px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    background: none;
+    border: none;
+    opacity: 0.6;
+    transition: opacity 0.3s, transform 0.3s;
+    z-index: 101;
+}
+
+.river-button:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+#river-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Orisinal-style earthy, soft colors */
+    background: linear-gradient(to bottom,
+            #B8D4C8 0%,
+            /* Soft sage green */
+            #8FB5A3 30%,
+            /* Muted teal */
+            #6A9B8C 60%,
+            /* Deeper sage */
+            #5A8B7C 100%
+            /* Deep earthy green */
+        );
+    z-index: 200;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+    /* Slower fade */
+    overflow: hidden;
+}
+
+/* River UI */
+.river-ui {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    right: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    z-index: 210;
+    pointer-events: none;
+}
+
+.river-score {
+    font-family: 'Lora', serif;
+    font-size: 1.3rem;
+    font-weight: 400;
+    font-style: italic;
+    color: #F5F0E6;
+    /* Creamy white */
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.stability-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 5px;
+}
+
+.stability-label {
+    font-family: 'Lora', serif;
+    font-size: 0.9rem;
+    font-style: italic;
+    color: #F5F0E6;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.stability-bar {
+    width: 140px;
+    height: 16px;
+    background: rgba(90, 70, 50, 0.3);
+    /* Earthy brown */
+    border-radius: 8px;
+    overflow: hidden;
+    border: 2px solid rgba(245, 240, 230, 0.5);
+}
+
+.stability-fill {
+    width: 100%;
+    height: 100%;
+    /* Softer gradient - earthy greens to warm yellows */
+    background: linear-gradient(to right, #C9A86C, #A8C686, #7BAE7F);
+    border-radius: 6px;
+    transition: width 0.5s ease;
+    /* Slower transition */
+}
+
+/* River Game Area - Horizontal Layout */
+#river-game-area {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+}
+
+/* Shores */
+.river-shore {
+    width: 80px;
+    height: 100%;
+    background: linear-gradient(to bottom, #8B7355, #7A6548, #6B5A3E);
+    position: relative;
+    z-index: 206;
+    flex-shrink: 0;
+}
+
+.shore-left {
+    border-right: 4px solid #5D4E35;
+}
+
+.shore-right {
+    border-left: 4px solid #5D4E35;
+}
+
+.shore-grass {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 40%;
+    background: linear-gradient(to bottom, #7A9F6A, #5D8A4A);
+    border-top: 3px solid #4A7A3A;
+}
+
+.shore-goal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2.2rem;
+    animation: goalPulse 3s ease-in-out infinite;
+}
+
+@keyframes goalPulse {
+
+    0%,
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.7;
+    }
+
+    50% {
+        transform: translate(-50%, -50%) scale(1.15);
+        opacity: 1;
+    }
+}
+
+/* Horizontal River Water */
+.river-water-horizontal {
+    flex: 1;
+    height: 100%;
+    background: linear-gradient(to bottom,
+            #8FB5A3 0%,
+            #6A9B8C 50%,
+            #5A8B7C 100%);
+    position: relative;
+}
+
+.river-water-horizontal::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 300%;
+    height: 100%;
+    background: repeating-linear-gradient(90deg,
+            rgba(255, 255, 255, 0.08) 0px,
+            rgba(255, 255, 255, 0.03) 30px,
+            transparent 60px,
+            transparent 100px);
+    animation: waterFlowHorizontal 6s linear infinite;
+}
+
+@keyframes waterFlowHorizontal {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(33.33%);
+    }
+}
+
+/* Animated River Water - slower, gentler */
+.river-water {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 200%;
+    background:
+        repeating-linear-gradient(0deg,
+            rgba(255, 255, 255, 0.06) 0px,
+            rgba(255, 255, 255, 0.03) 15px,
+            transparent 30px,
+            transparent 60px),
+        repeating-linear-gradient(90deg,
+            rgba(255, 255, 255, 0.02) 0px,
+            transparent 150px);
+    animation: riverFlow 4s linear infinite;
+}
+
+@keyframes riverFlow {
+    from {
+        transform: translateY(-50%);
+    }
+
+    to {
+        transform: translateY(0%);
+    }
+}
+
+/* Player: Capybara with Turtle - Horizontal Layout */
+#river-player {
+    position: absolute;
+    left: 100px;
+    /* Start near left shore */
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100px;
+    height: 80px;
+    z-index: 207;
+    transition: top 0.15s ease-out, left 0.05s linear;
+}
+
+.river-capy {
+    width: 100px;
+    height: auto;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
+    animation: swimmingBob 2s ease-in-out infinite;
+}
+
+.river-turtle {
+    width: 45px;
+    height: auto;
+    position: absolute;
+    bottom: 40px;
+    left: 30px;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
+    animation: turtleRide 2s ease-in-out infinite;
+    transition: transform 0.3s ease;
+}
+
+@keyframes swimmingBob {
+
+    0%,
+    100% {
+        transform: translateY(0) rotate(2deg);
+    }
+
+    50% {
+        transform: translateY(-4px) rotate(-2deg);
+    }
+}
+
+@keyframes turtleRide {
+
+    0%,
+    100% {
+        transform: rotate(-3deg);
+    }
+
+    50% {
+        transform: rotate(3deg);
+    }
+}
+
+/* UI Horizontal Layout */
+.river-ui-horizontal {
+    position: absolute;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 30px;
+    align-items: center;
+    background: rgba(90, 80, 60, 0.5);
+    padding: 10px 20px;
+    border-radius: 15px;
+    backdrop-filter: blur(8px);
+    z-index: 210;
+}
+
+.stability-container-h,
+.progress-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.progress-label {
+    font-family: 'Lora', serif;
+    font-size: 0.85rem;
+    font-style: italic;
+    color: #F5F0E6;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.stability-bar-h,
+.progress-bar {
+    width: 120px;
+    height: 12px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid rgba(245, 240, 230, 0.3);
+}
+
+.progress-fill {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(to right, #C9A86C, #E8D5A3);
+    border-radius: 5px;
+    transition: width 0.1s linear;
+}
+
+.crosses-display {
+    font-family: 'Lora', serif;
+    font-size: 1.1rem;
+    color: #F5F0E6;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes bobbing {
+
+    0%,
+    100% {
+        transform: translateX(-50%) translateY(0) rotate(-2deg);
+    }
+
+    50% {
+        transform: translateX(-50%) translateY(-5px) rotate(2deg);
+    }
+}
+
+@keyframes turtleBob {
+
+    0%,
+    100% {
+        transform: translateX(-50%) rotate(2deg);
+    }
+
+    50% {
+        transform: translateX(-50%) rotate(-2deg);
+    }
+}
+
+/* Turtle wobble when losing stability */
+.river-turtle.wobble {
+    animation: turtleWobble 0.3s ease-in-out;
+}
+
+@keyframes turtleWobble {
+
+    0%,
+    100% {
+        transform: translateX(-50%) rotate(0deg);
+    }
+
+    25% {
+        transform: translateX(-50%) rotate(-15deg);
+    }
+
+    75% {
+        transform: translateX(-50%) rotate(15deg);
+    }
+}
+
+/* Obstacles - softer animation */
+.river-obstacle {
+    position: absolute;
+    font-size: 2.5rem;
+    z-index: 204;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+    animation: obstacleFloat 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes obstacleFloat {
+    from {
+        transform: translateY(0) rotate(-2deg);
+    }
+
+    to {
+        transform: translateY(-3px) rotate(2deg);
+    }
+}
+
+/* Power-ups - gentler glow */
+.river-powerup {
+    position: absolute;
+    font-size: 2rem;
+    z-index: 204;
+    filter: drop-shadow(0 0 6px rgba(200, 180, 120, 0.4));
+    animation: powerupGlow 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes powerupGlow {
+    from {
+        transform: scale(1);
+        filter: drop-shadow(0 0 4px rgba(200, 180, 120, 0.2));
+    }
+
+    to {
+        transform: scale(1.05);
+        filter: drop-shadow(0 0 8px rgba(200, 180, 120, 0.5));
+    }
+}
+
+/* River Hint - hidden by default, UI is self-explanatory */
+#river-hint {
+    display: none;
+}
+
+/* Splash effect when turtle falls */
+.splash {
+    position: absolute;
+    font-size: 4rem;
+    animation: splashAnim 0.8s ease-out forwards;
+    z-index: 220;
+}
+
+@keyframes splashAnim {
+    0% {
+        transform: scale(0.5);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+
+/* River banks (decorative) - earthier tones */
+.river-bank-left,
+.river-bank-right {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 50px;
+    background: linear-gradient(to bottom, #8B7355, #7A6548, #6B5A3E);
+    z-index: 203;
+}
+
+.river-bank-left {
+    left: 0;
+    border-right: 3px solid #5D4E35;
+}
+
+.river-bank-right {
+    right: 0;
+    border-left: 3px solid #5D4E35;
+}
+
+/* Mobile responsive */
+@media (max-width: 600px) {
+    #river-player {
+        width: 80px;
+        height: 100px;
+    }
+
+    .river-capy {
+        width: 80px;
+    }
+
+    .river-turtle {
+        width: 40px;
+        bottom: 50px;
+    }
+
+    .stability-bar {
+        width: 100px;
+    }
+
+    .river-obstacle {
+        font-size: 2rem;
+    }
+}
