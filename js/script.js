@@ -341,7 +341,7 @@ function setupPetting() {
 }
 
 function spawnHeart(container, event) {
-    const hearts = ['??', '??', '??', '??'];
+    const hearts = ['❤️', '💕', '💖', '💗'];
     const heart = document.createElement('div');
     heart.className = 'heart';
     heart.innerText = hearts[Math.floor(Math.random() * hearts.length)];
@@ -807,7 +807,7 @@ function feedCapybara(foodEmoji) {
             setTimeout(() => {
                 const heart = document.createElement('div');
                 heart.className = 'heart';
-                heart.innerText = '??';
+                heart.innerText = '❤️';
 
                 // Center in container
                 const containerRect = container.getBoundingClientRect();
@@ -924,9 +924,9 @@ function updateScoreboard() {
     let heartsHTML = '';
     for (let i = 0; i < 5; i++) {
         if (i < lives) {
-            heartsHTML += '??';
+            heartsHTML += '❤️';
         } else {
-            heartsHTML += '??'; // Broken or empty heart
+            heartsHTML += '🖤'; // Broken or empty heart
         }
     }
     livesContainer.innerHTML = heartsHTML;
