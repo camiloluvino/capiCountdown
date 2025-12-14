@@ -111,7 +111,9 @@ body.night-mode .note-3d {
     background-size: 100% 1.5em;
     padding: 40px;
     width: 90%;
-    max-width: 500px;
+    max-width: 650px;
+    max-height: 75vh;
+    overflow-y: auto;
     box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.2);
     position: relative;
     text-align: center;
@@ -153,7 +155,7 @@ body.night-mode .note-3d {
     font-family: 'Indie Flower', cursive;
 }
 
-/* Simple Trees (CSS Only) */
+/* Simple Trees (CSS Only) - Original Oak-like */
 .tree-3d {
     --tree-color: #2E8B57;
     position: absolute;
@@ -177,6 +179,118 @@ body.night-mode .note-3d {
     left: -10px;
 }
 
+/* Pine Trees - Taller and narrower with multiple layers */
+.tree-3d.pine {
+    border-left-width: 40px;
+    border-right-width: 40px;
+    border-bottom-width: 180px;
+}
+
+.tree-3d.pine::before {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-left: 50px solid transparent;
+    border-right: 50px solid transparent;
+    border-bottom: 140px solid var(--tree-color);
+    bottom: 60px;
+    left: -50px;
+    filter: brightness(1.1);
+}
+
+.tree-3d.pine::after {
+    width: 16px;
+    height: 50px;
+    bottom: -170px;
+    left: -8px;
+    background: #654321;
+}
+
+/* Birch Trees - White trunk, rounder top */
+.tree-3d.birch {
+    border-left-width: 70px;
+    border-right-width: 70px;
+    border-bottom-width: 160px;
+    border-radius: 50% 50% 0 0;
+}
+
+.tree-3d.birch::after {
+    background: linear-gradient(90deg, #f5f5dc 0%, #dcdcdc 30%, #f5f5dc 50%, #dcdcdc 70%, #f5f5dc 100%);
+    width: 14px;
+    height: 60px;
+    bottom: -150px;
+    left: -7px;
+}
+
+/* Bushes - Small round vegetation */
+.bush-3d {
+    --bush-color: #228B22;
+    position: absolute;
+    width: 80px;
+    height: 50px;
+    background: var(--bush-color);
+    border-radius: 50% 50% 40% 40%;
+    left: 50%;
+    top: 50%;
+    transform-origin: bottom center;
+    box-shadow: inset -10px -10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.bush-3d::before {
+    content: '';
+    position: absolute;
+    width: 60px;
+    height: 40px;
+    background: var(--bush-color);
+    border-radius: 50%;
+    top: -20px;
+    left: 10px;
+    filter: brightness(1.1);
+}
+
+/* Flowers - Small decorative elements */
+.flower-3d {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    left: 50%;
+    top: 50%;
+    transform-origin: bottom center;
+}
+
+.flower-3d::before {
+    content: '🌸';
+    font-size: 1.5rem;
+    position: absolute;
+    bottom: 0;
+}
+
+.flower-3d.yellow::before {
+    content: '🌼';
+}
+
+.flower-3d.red::before {
+    content: '🌺';
+}
+
+.flower-3d.tulip::before {
+    content: '🌷';
+}
+
+/* Mushrooms - Small forest details */
+.mushroom-3d {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform-origin: bottom center;
+}
+
+.mushroom-3d::before {
+    content: '🍄';
+    font-size: 1.2rem;
+}
+
 /* Fog & UI */
 #forest-fog {
     position: absolute;
@@ -191,6 +305,44 @@ body.night-mode .note-3d {
 
 body.night-mode #forest-fog {
     background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(11, 16, 38, 0.8) 80%, #0B1026 100%);
+}
+
+/* Ground / Floor gradient */
+#forest-ground {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    pointer-events: none;
+    background: linear-gradient(to top,
+            #4a6741 0%,
+            /* Solid forest green at bottom */
+            rgba(74, 103, 65, 0.95) 15%,
+            /* Almost solid */
+            rgba(85, 128, 70, 0.7) 35%,
+            /* Medium green */
+            rgba(120, 160, 90, 0.4) 55%,
+            /* Light green */
+            rgba(255, 255, 255, 0) 100%
+            /* Transparent at top */
+        );
+    z-index: 60;
+}
+
+body.night-mode #forest-ground {
+    background: linear-gradient(to top,
+            #1a2a1f 0%,
+            /* Very dark green at bottom */
+            rgba(26, 42, 31, 0.95) 15%,
+            /* Almost solid */
+            rgba(35, 55, 40, 0.7) 35%,
+            /* Dark forest */
+            rgba(45, 70, 50, 0.4) 55%,
+            /* Subtle dark */
+            rgba(0, 0, 0, 0) 100%
+            /* Transparent at top */
+        );
 }
 
 /* Ghost Note (Add New) */
@@ -373,4 +525,170 @@ body.night-mode #forest-fog {
     transform: scale(1.05);
     background: #ffffff;
     box-shadow: 0 6px 15px rgba(255, 215, 0, 0.4);
+}
+
+/* Go to End Button */
+#forest-go-end-btn {
+    position: fixed;
+    top: 80px;
+    /* Below the add note button */
+    left: 20px;
+    z-index: 200;
+    background: #87CEEB;
+    /* Sky blue */
+    color: #2c3e50;
+    border: 2px solid #4682B4;
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-family: 'Outfit', sans-serif;
+    font-weight: bold;
+    font-size: 1rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    display: none;
+    transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+#forest-go-end-btn:hover {
+    transform: scale(1.05);
+    background: #B0E0E6;
+    box-shadow: 0 6px 15px rgba(70, 130, 180, 0.4);
+}
+
+/* ========== FOREST PARTICLES ========== */
+#forest-particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 50;
+    /* Lower than notes (which are in forest-world) to not block clicks */
+    overflow: hidden;
+}
+
+/* Falling Leaves (Day Mode) */
+.forest-particle {
+    position: absolute;
+    font-size: 1.2rem;
+    opacity: 0.8;
+    animation: particleFall linear infinite;
+    pointer-events: none;
+}
+
+@keyframes particleFall {
+    0% {
+        transform: translateY(-20px) translateX(0) rotate(0deg);
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 0.8;
+    }
+
+    90% {
+        opacity: 0.8;
+    }
+
+    100% {
+        transform: translateY(100vh) translateX(50px) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* Leaf sway animation */
+.forest-particle.leaf {
+    animation: leafFall linear infinite, leafSway ease-in-out infinite;
+}
+
+@keyframes leafFall {
+    0% {
+        top: -5%;
+        opacity: 0;
+    }
+
+    5% {
+        opacity: 0.9;
+    }
+
+    95% {
+        opacity: 0.7;
+    }
+
+    100% {
+        top: 105%;
+        opacity: 0;
+    }
+}
+
+@keyframes leafSway {
+
+    0%,
+    100% {
+        transform: translateX(0) rotate(0deg);
+    }
+
+    25% {
+        transform: translateX(30px) rotate(15deg);
+    }
+
+    50% {
+        transform: translateX(-10px) rotate(-10deg);
+    }
+
+    75% {
+        transform: translateX(20px) rotate(10deg);
+    }
+}
+
+/* Fireflies (Night Mode) */
+body.night-mode .forest-particle.leaf {
+    display: none;
+}
+
+.forest-particle.firefly {
+    display: none;
+    width: 6px;
+    height: 6px;
+    background: radial-gradient(circle, #ffff88 0%, #ffcc00 50%, transparent 70%);
+    border-radius: 50%;
+    box-shadow: 0 0 10px 4px rgba(255, 255, 100, 0.6);
+    animation: fireflyFloat 8s ease-in-out infinite, fireflyGlow 2s ease-in-out infinite alternate;
+}
+
+body.night-mode .forest-particle.firefly {
+    display: block;
+}
+
+@keyframes fireflyFloat {
+
+    0%,
+    100% {
+        transform: translate(0, 0);
+    }
+
+    25% {
+        transform: translate(40px, -30px);
+    }
+
+    50% {
+        transform: translate(-20px, 20px);
+    }
+
+    75% {
+        transform: translate(30px, 40px);
+    }
+}
+
+@keyframes fireflyGlow {
+    0% {
+        opacity: 0.3;
+        box-shadow: 0 0 5px 2px rgba(255, 255, 100, 0.3);
+    }
+
+    100% {
+        opacity: 1;
+        box-shadow: 0 0 15px 6px rgba(255, 255, 100, 0.8);
+    }
 }
