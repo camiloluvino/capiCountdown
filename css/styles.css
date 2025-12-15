@@ -24,8 +24,13 @@ body.night-mode {
     --glass-border: rgba(255, 255, 255, 0.1);
 }
 
+/* Emoji font stack for cross-platform support */
+.emoji-font {
+    font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", "Segoe UI Symbol", sans-serif;
+}
+
 body {
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Outfit', 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif;
     background-color: var(--bg-color);
     background-image: var(--bg-gradient);
     background-attachment: fixed;
@@ -504,6 +509,7 @@ body.night-mode .feeding-menu {
 
 .food-item {
     font-size: 2rem;
+    font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
     cursor: pointer;
     transition: transform 0.2s;
     user-select: none;
@@ -518,6 +524,7 @@ body.night-mode .feeding-menu {
 .food-projectile {
     position: absolute;
     font-size: 3rem;
+    font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
     pointer-events: none;
     z-index: 60;
     opacity: 0;
@@ -553,6 +560,7 @@ body.night-mode .feeding-menu {
     background: none;
     border: none;
     font-size: 1.5rem;
+    font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
     cursor: pointer;
     opacity: 0.6;
     transition: opacity 0.3s;
@@ -773,6 +781,7 @@ body.night-mode #game-overlay {
 .game-item {
     position: absolute;
     font-size: 2rem;
+    font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
     pointer-events: none;
     z-index: 205;
 }
@@ -811,6 +820,7 @@ body.night-mode #game-overlay {
     top: 30px;
     left: 30px;
     font-size: 1.5rem;
+    font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
     cursor: pointer;
     background: none;
     border: none;
@@ -830,6 +840,7 @@ body.night-mode #game-overlay {
     left: 80px;
     /* Right next to play button */
     font-size: 1.5rem;
+    font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
     cursor: pointer;
     background: none;
     border: none;
@@ -1002,6 +1013,7 @@ body.night-mode .note-message.my-message {
 
 .lives-display {
     font-size: 1.5rem;
+    font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
     margin-top: 5px;
     letter-spacing: 5px;
 }
@@ -1015,6 +1027,7 @@ body.night-mode .note-message.my-message {
     top: 30px;
     left: 130px;
     font-size: 1.5rem;
+    font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
     cursor: pointer;
     background: none;
     border: none;

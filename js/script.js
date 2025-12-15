@@ -1,5 +1,5 @@
 ﻿// --- FIREBASE CONFIGURATION ---
-// ?? IMPORTANTE: Pega aqu� abajo el c�digo que te dio Firebase
+// 🔴 IMPORTANTE: Pega aquí abajo el código que te dio Firebase
 // Reemplaza todo el objeto firebaseConfig con el tuyo.
 const firebaseConfig = {
     apiKey: "AIzaSyCHsBs2yjkX290sxePbpz8ub5KiEV482Xk",
@@ -20,7 +20,7 @@ try {
     database = firebase.database();
     console.log("Firebase inicializado");
 } catch (e) {
-    console.error("Error inicializando Firebase (�Falta la config?):", e);
+    console.error("Error inicializando Firebase (¿Falta la config?):", e);
 }
 
 // --- Notes System Integration ---
@@ -144,8 +144,8 @@ if (database) {
             notesList.innerHTML = '<div class="note-message system-message">Escribe la primera nota... ?</div>';
         }
     }).catch(e => {
-        console.error("Error conexi�n inicial:", e);
-        notesList.innerHTML = '<div class="note-message system-message" style="color:red">Error de conexi�n</div>';
+        console.error("Error conexión inicial:", e);
+        notesList.innerHTML = '<div class="note-message system-message" style="color:red">Error de conexión</div>';
     });
 
     notesRef.limitToLast(50).on('child_added', (snapshot) => {
@@ -230,61 +230,61 @@ const zenMessages = [
     "Ya falta menos que ayer.",
     "El tiempo avanza, quieras o no.",
     "Todo llega a su debido tiempo.",
-    "Un d�a m�s, un d�a menos.",
+    "Un día más, un día menos.",
     "La espera es parte del proceso.",
     "El 28 se acerca sin prisa pero sin pausa.",
-    "Guardando energ�a para el gran d�a.",
+    "Guardando energía para el gran día.",
     "Paciencia: el arte de dejar que el tiempo pase.",
-    "Solo es cuesti�n de tiempo.",
+    "Solo es cuestión de tiempo.",
     "El calendario no se detiene.",
     "Lo bueno se hace esperar.",
     "Cada segundo cuenta.",
     "Respira, ya casi estamos.",
-    "La meta est� m�s cerca.",
+    "La meta está más cerca.",
     "Disfruta el camino.",
-    "Hoy es un paso m�s.",
+    "Hoy es un paso más.",
     "La paciencia es amarga, pero su fruto es dulce.",
-    "No cuentes los d�as, haz que los d�as cuenten.",
+    "No cuentes los días, haz que los días cuenten.",
     "Todo llega para quien sabe esperar.",
-    "Conf�a en el tiempo.",
-    "Un d�a a la vez.",
-    "La calma antes de la celebraci�n.",
+    "Confía en el tiempo.",
+    "Un día a la vez.",
+    "La calma antes de la celebración.",
     "Preparando motores...",
     "Siente la brisa de la espera.",
-    "Mant�n la visi�n en el 28.",
-    "Peque�os pasos, grandes distancias.",
-    "La espera construye el car�cter.",
+    "Mantén la visión en el 28.",
+    "Pequeños pasos, grandes distancias.",
+    "La espera construye el carácter.",
     "Ya casi puedes saborearlo.",
     "Tranquilidad y buenos alimentos.",
     "El futuro se construye hoy.",
     "Nada es eterno, ni siquiera la espera.",
-    "Sonr�e, el tiempo est� de tu lado.",
-    "La mejor compa��a es la calma.",
-    "Observa c�mo pasan las nubes.",
-    "El 28 brillar� m�s que nunca."
+    "Sonríe, el tiempo está de tu lado.",
+    "La mejor compañía es la calma.",
+    "Observa cómo pasan las nubes.",
+    "El 28 brillará más que nunca."
 ];
 
 // Turtle messages (wise, contemplative, philosophical)
 const turtleMessages = [
-    "La paciencia es la compa�era del sabio.",
+    "La paciencia es la compañera del sabio.",
     "Cada paso lento es un paso seguro.",
-    "El tiempo no tiene prisa, �por qu� habr�as de tenerla t�?",
-    "La sabidur�a crece con la quietud.",
+    "El tiempo no tiene prisa, ¿por qué habrías de tenerla tú?",
+    "La sabiduría crece con la quietud.",
     "Observa, reflexiona, avanza.",
     "En la calma se encuentra la verdad.",
     "La vida es larga para quien sabe esperar.",
     "No hay prisa en el camino del sabio.",
     "La tortuga llega antes que el impaciente.",
-    "Medita en el ahora, el futuro vendr�.",
+    "Medita en el ahora, el futuro vendrá.",
     "El sabio espera, el necio corre.",
-    "Cada d�a es una lecci�n de paciencia.",
-    "La contemplaci�n es el sendero.",
-    "Lento pero constante, as� se llega.",
-    "El tiempo es el maestro m�s antiguo.",
-    "Respira profundo, el 28 est� escrito.",
+    "Cada día es una lección de paciencia.",
+    "La contemplación es el sendero.",
+    "Lento pero constante, así se llega.",
+    "El tiempo es el maestro más antiguo.",
+    "Respira profundo, el 28 está escrito.",
     "La serenidad es tu mayor fortaleza.",
     "Observa el horizonte sin ansiedad.",
-    "La espera es meditaci�n en movimiento.",
+    "La espera es meditación en movimiento.",
     "Cada amanecer es un regalo."
 ];
 
@@ -709,13 +709,13 @@ if (saveEditBtn) {
 
             // Optional: Refresh Main View?
             // Page reload might be easiest to sync everything
-            if (confirm("Recargar p�gina para ver cambios?")) location.reload();
+            if (confirm("¿Recargar página para ver cambios?")) location.reload();
         });
     });
 }
 
 function deleteAdminNote(key) {
-    if (confirm('�Seguro que quieres borrar esta nota para siempre?')) {
+    if (confirm('¿Seguro que quieres borrar esta nota para siempre?')) {
         database.ref('shared_notes/' + key).remove().then(() => {
             loadAdminNotes();
             // location.reload(); // Optional
@@ -775,7 +775,7 @@ function feedCapybara(foodEmoji) {
         capy.classList.add('happy-bounce');
 
         // Reaction: Text Bubble
-        const phrases = ['��am!', '�Rico!', '�Gracias!', '??', '??'];
+        const phrases = ['Ñam!', '¡Rico!', '¡Gracias!', '😋', '🤤'];
         const text = phrases[Math.floor(Math.random() * phrases.length)];
 
         const bubble = document.createElement('div');
@@ -948,12 +948,14 @@ function spawnItem() {
     if (!gameActive) return;
 
     const types = [
-        { text: '??', score: 10, speed: 2, type: 'fruit' },
-        { text: '??', score: 10, speed: 2.5, type: 'fruit' },
-        { text: '??', score: 10, speed: 3, type: 'fruit' },
-        { text: '??', score: 20, speed: 1.5, type: 'rare' },
-        { text: '??', score: 50, speed: 3.5, type: 'rare' },
-        { text: '??', score: 100, speed: 1, type: 'leaf' } // High score!
+        { text: '🍎', score: 10, speed: 2, type: 'fruit' },
+        { text: '🍊', score: 10, speed: 2.5, type: 'fruit' },
+        { text: '🍇', score: 10, speed: 3, type: 'fruit' },
+        { text: '🎁', score: 20, speed: 1.5, type: 'rare' },
+        { text: '⭐', score: 50, speed: 3.5, type: 'rare' },
+        { text: '🍂', score: 100, speed: 1, type: 'leaf' }, // High score!
+        { text: '🪨', score: 0, speed: 2.5, type: 'bad' },  // ¡Evitar! - Piedra
+        { text: '🐝', score: 0, speed: 3, type: 'bad' }     // ¡Evitar! - Abeja
     ];
 
     const randomType = types[Math.floor(Math.random() * types.length)];
@@ -1014,6 +1016,25 @@ function gameLoop() {
             itemRect.left <= playerRect.right - hitMarginX
         ) {
             // Collision!
+
+            // Check if it's a BAD item (obstacle)
+            if (item.type === 'bad') {
+                // Lose a life!
+                lives--;
+                updateScoreboard();
+                showFeedback(item.x, item.y, '💥');
+
+                item.element.remove();
+                items.splice(i, 1);
+
+                if (lives <= 0) {
+                    gameOver();
+                    return;
+                }
+                continue;
+            }
+
+            // Good item - add score
             score += item.score;
 
             // Update count
@@ -1028,22 +1049,23 @@ function gameLoop() {
             continue;
         }
 
-        // Remove if off screen (MISS!)
+        // Remove if off screen
         if (item.y > window.innerHeight) {
-            // Penalty for missing
-            lives--;
-            updateScoreboard();
+            // Bad items don't penalize when missed (you SHOULD avoid them)
+            if (item.type !== 'bad') {
+                // Penalty for missing good items
+                lives--;
+                updateScoreboard();
+                showFeedback(item.x, window.innerHeight - 50, '💔');
 
-            // Visual feedback for miss
-            showFeedback(item.x, window.innerHeight - 50, '??');
+                if (lives <= 0) {
+                    gameOver();
+                    return; // Stop loop
+                }
+            }
 
             item.element.remove();
             items.splice(i, 1);
-
-            if (lives <= 0) {
-                gameOver();
-                return; // Stop loop
-            }
         }
     }
 
@@ -1069,8 +1091,8 @@ function gameOver() {
     msg.style.zIndex = '300';
 
     msg.innerHTML = `
-        <h2 style="color: #556B2F; margin-top:0;">�Juego Terminado!</h2>
-        <p style="font-size: 1.5rem; margin: 10px 0;">Puntuaci�n Final: <b>${score}</b></p>
+        <h2 style="color: #556B2F; margin-top:0;">¡Juego Terminado!</h2>
+        <p style="font-size: 1.5rem; margin: 10px 0;">Puntuación Final: <b>${score}</b></p>
         <button id="restartBtn" style="
             background: #8FBC8F; 
             border: none; 
@@ -1166,7 +1188,7 @@ window.save3DNote = function (text) {
         if (error) {
             alert("Error de Firebase: " + error.message);
         } else {
-            console.log("Nota guardada con �xito");
+            console.log("Nota guardada con éxito");
         }
     });
 
@@ -1183,7 +1205,7 @@ window.save3DNote = function (text) {
 };
 
 // ==========================================
-// RIVER GAME - Cruzando el R�o (Horizontal Zen Version)
+// RIVER GAME - Cruzando el Río (Horizontal Zen Version)
 // ==========================================
 
 const RiverGame = {
@@ -1513,12 +1535,12 @@ const RiverGame = {
             setTimeout(() => this.turtle.classList.remove('wobble'), 300);
         }
 
-        this.showFeedback('??', this.player.offsetLeft + 50, this.player.offsetTop);
+        this.showFeedback('💥', this.player.offsetLeft + 50, this.player.offsetTop);
     },
 
     collectPowerup(powerup) {
         this.stability = Math.min(100, this.stability + powerup.heal);
-        this.showFeedback('??', this.player.offsetLeft + 50, this.player.offsetTop);
+        this.showFeedback('✨', this.player.offsetLeft + 50, this.player.offsetTop);
     },
 
     showFeedback(emoji, x, y) {
@@ -1574,7 +1596,7 @@ const RiverGame = {
 
         // Ask to continue
         setTimeout(() => {
-            const again = confirm(`?? �Cruzaste el r�o! ??\n\nCruces completados: ${this.crosses}\n\n�Ayudar a la tortuga a cruzar de vuelta?`);
+            const again = confirm(`🎉 ¡Cruzaste el río! 🎉\n\nCruces completados: ${this.crosses}\n\n¿Ayudar a la tortuga a cruzar de vuelta?`);
             if (again) {
                 this.resetForNextCrossing();
             } else {
@@ -1584,7 +1606,7 @@ const RiverGame = {
     },
 
     showCelebration() {
-        const emojis = ['??', '?', '??', '??'];
+        const emojis = ['🎉', '✨', '🌸', '🎊'];
         for (let i = 0; i < 8; i++) {
             setTimeout(() => {
                 const celebration = document.createElement('div');
@@ -1628,7 +1650,7 @@ const RiverGame = {
         // Splash effect
         const splash = document.createElement('div');
         splash.className = 'splash';
-        splash.innerText = '??';
+        splash.innerText = '💦';
         splash.style.left = this.playerX + 'px';
         splash.style.top = this.player.offsetTop + 'px';
         this.gameArea.appendChild(splash);
@@ -1644,7 +1666,7 @@ const RiverGame = {
                 this.turtle.style.opacity = '1';
             }
 
-            const again = confirm(`?? La tortuga cay� al agua...\n\nPero las tortugas saben nadar un poco.\n�Intentarlo de nuevo?`);
+            const again = confirm(`🐢 La tortuga cayó al agua...\n\nPero las tortugas saben nadar un poco.\n¿Intentarlo de nuevo?`);
             if (again) {
                 this.resetForNextCrossing();
             } else {

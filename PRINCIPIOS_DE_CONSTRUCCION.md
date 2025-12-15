@@ -21,6 +21,27 @@ El proyecto **SIEMPRE** debe mantener un "Modo Desarrollador" accesible pero dis
 *   **Visibilidad:** El número de versión (ej. `v1.7`) debe ser visible, ya sea en el footer o dentro del panel de debug.
 *   **Actualización:** Al hacer cambios significativos, se debe incrementar la versión y actualizar la cadena de texto en el código.
 
+### C. Encabezado de Versión en index.html (⚠️ IMPERATIVO) 📋
+> **REGLA OBLIGATORIA:** Cada vez que se realice CUALQUIER modificación al código, se DEBE actualizar el comentario de versión al inicio del archivo `index.html`.
+
+*   **Ubicación:** Al inicio del archivo `index.html`, ANTES del `<!DOCTYPE html>`.
+*   **Formato obligatorio:**
+    ```html
+    <!--
+        ============================================
+        CAPI COUNTDOWN - Contador Capibara
+        ============================================
+        Versión: X.X.X
+        Fecha: YYYY-MM-DD
+        Hora: HH:MM (UTC-3 Chile)
+        ============================================
+    -->
+    ```
+*   **Actualización IMPERATIVA:**
+    *   La fecha y hora deben reflejar el momento EXACTO de la modificación.
+    *   El número de versión se incrementa según la magnitud del cambio.
+    *   **NO se puede omitir este paso bajo ninguna circunstancia.**
+
 ## 3. Arquitectura Técnica 🏗️
 *   **Estructura de Carpetas:**
     *   `/css`: Estilos separados por funcionalidad (`styles.css` global, `3d-forest.css`, `admin.css`).
