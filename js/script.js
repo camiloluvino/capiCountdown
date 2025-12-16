@@ -655,8 +655,8 @@ function loadAdminNotes() {
                     ${shortText}
                 </div>
                 <div class="admin-btn-group">
-                    <button class="admin-btn edit-btn" data-key="${key}">??</button>
-                    <button class="admin-btn delete-btn" data-key="${key}">???</button>
+                    <button class="admin-btn edit-btn" data-key="${key}">✏️</button>
+                    <button class="admin-btn delete-btn" data-key="${key}">🗑️</button>
                 </div>
             `;
 
@@ -744,7 +744,7 @@ const bodyTheme = document.body;
 themeToggle.addEventListener('click', () => {
     bodyTheme.classList.toggle('night-mode');
     const isNight = bodyTheme.classList.contains('night-mode');
-    themeToggle.innerText = isNight ? '??' : '??';
+    themeToggle.innerText = isNight ? '☀️' : '🌙';
 
     // Optional: Switch Capybara to sleeping if night mode is on
     // But only if we want to override the daily mood. 

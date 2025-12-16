@@ -159,22 +159,22 @@ const RiverGame = {
         // Handle vertical input (up/down only)
         this.handleInput(deltaTime);
 
-        // Auto-move forward (left to right) - very slow, zen pace
-        const forwardSpeed = 40; // pixels per second
+        // Auto-move forward (left to right) - fast pace
+        const forwardSpeed = 120; // pixels per second (very fast)
         this.playerX += forwardSpeed * deltaTime;
 
         // Calculate progress percentage
         const totalDistance = this.riverEnd - this.riverStart;
         this.progress = Math.min(100, ((this.playerX - this.riverStart) / totalDistance) * 100);
 
-        // Spawn obstacles (coming from ahead)
-        if (now - this.lastObstacleTime > 2000) {
+        // Spawn obstacles (coming from ahead) - more frequent
+        if (now - this.lastObstacleTime > 1200) {
             this.spawnObstacle();
             this.lastObstacleTime = now;
         }
 
-        // Spawn powerups occasionally
-        if (now - this.lastPowerupTime > 3500) {
+        // Spawn powerups occasionally - more frequent
+        if (now - this.lastPowerupTime > 2000) {
             this.spawnPowerup();
             this.lastPowerupTime = now;
         }
@@ -203,7 +203,7 @@ const RiverGame = {
     },
 
     handleInput(deltaTime) {
-        const moveSpeed = 120; // pixels-ish per second (for percentage)
+        const moveSpeed = 280; // faster vertical movement for quick dodging
 
         if (this.keysPressed['ArrowUp'] || this.keysPressed['w']) {
             this.playerY -= moveSpeed * deltaTime;
@@ -260,8 +260,8 @@ const RiverGame = {
     },
 
     updateObstacles(deltaTime) {
-        // Obstacles drift slowly (river current - toward player)
-        const driftSpeed = 20; // very slow
+        // Obstacles drift (river current - toward player)
+        const driftSpeed = 80; // much faster drift
 
         for (let i = this.obstacles.length - 1; i >= 0; i--) {
             const obs = this.obstacles[i];
@@ -285,7 +285,7 @@ const RiverGame = {
     },
 
     updatePowerups(deltaTime) {
-        const driftSpeed = 15;
+        const driftSpeed = 60; // faster drift for powerups
 
         for (let i = this.powerups.length - 1; i >= 0; i--) {
             const pw = this.powerups[i];
@@ -329,12 +329,12 @@ const RiverGame = {
             setTimeout(() => this.turtle.classList.remove('wobble'), 300);
         }
 
-        this.showFeedback('??', this.player.offsetLeft + 50, this.player.offsetTop);
+        this.showFeedback('💥', this.player.offsetLeft + 50, this.player.offsetTop);
     },
 
     collectPowerup(powerup) {
         this.stability = Math.min(100, this.stability + powerup.heal);
-        this.showFeedback('??', this.player.offsetLeft + 50, this.player.offsetTop);
+        this.showFeedback('✨', this.player.offsetLeft + 50, this.player.offsetTop);
     },
 
     showFeedback(emoji, x, y) {
@@ -390,7 +390,7 @@ const RiverGame = {
 
         // Ask to continue
         setTimeout(() => {
-            const again = confirm(`?? �Cruzaste el r�o! ??\n\nCruces completados: ${this.crosses}\n\n�Ayudar a la tortuga a cruzar de vuelta?`);
+            const again = confirm(`🎉 ¡Cruzaste el río! 🎉\n\nCruces completados: ${this.crosses}\n\n¿Ayudar a la tortuga a cruzar de vuelta?`);
             if (again) {
                 this.resetForNextCrossing();
             } else {
@@ -400,7 +400,7 @@ const RiverGame = {
     },
 
     showCelebration() {
-        const emojis = ['??', '?', '??', '??'];
+        const emojis = ['🎉', '✨', '🌸', '🎊'];
         for (let i = 0; i < 8; i++) {
             setTimeout(() => {
                 const celebration = document.createElement('div');
@@ -444,7 +444,7 @@ const RiverGame = {
         // Splash effect
         const splash = document.createElement('div');
         splash.className = 'splash';
-        splash.innerText = '??';
+        splash.innerText = '💦';
         splash.style.left = this.playerX + 'px';
         splash.style.top = this.player.offsetTop + 'px';
         this.gameArea.appendChild(splash);
@@ -460,7 +460,7 @@ const RiverGame = {
                 this.turtle.style.opacity = '1';
             }
 
-            const again = confirm(`?? La tortuga cay� al agua...\n\nPero las tortugas saben nadar un poco.\n�Intentarlo de nuevo?`);
+            const again = confirm(`🐢 La tortuga cayó al agua...\n\nPero las tortugas saben nadar un poco.\n¿Intentarlo de nuevo?`);
             if (again) {
                 this.resetForNextCrossing();
             } else {
