@@ -53,6 +53,9 @@ function init3DForest() {
 
         // Spawn initial particles
         spawnForestParticles();
+
+        // Spawn sun rays (god rays effect)
+        spawnSunRays();
     }
 
     window.addEventListener('wheel', (e) => {
@@ -470,6 +473,30 @@ function spawnForestParticles() {
 
         container.appendChild(firefly);
     }
+}
+
+// ========== SUN RAYS (GOD RAYS) ==========
+// Isolated visual effect - only creates new elements, does not modify existing
+function spawnSunRays() {
+    // Check if already exists
+    if (document.getElementById('sun-rays')) return;
+
+    const viewport = document.getElementById('forest-viewport');
+    if (!viewport) return;
+
+    // Create container
+    const container = document.createElement('div');
+    container.id = 'sun-rays';
+
+    // Create 5 rays with varied angles
+    const rayCount = 5;
+    for (let i = 0; i < rayCount; i++) {
+        const ray = document.createElement('div');
+        ray.className = 'sun-ray';
+        container.appendChild(ray);
+    }
+
+    viewport.appendChild(container);
 }
 
 window.init3DForest = init3DForest;
