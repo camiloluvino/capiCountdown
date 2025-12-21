@@ -111,6 +111,7 @@ const RiverGame = {
         this.lastObstacleTime = 0;
         this.lastPowerupTime = 0;
         this.isRunning = true;
+        this.crosses = this.crosses || 0;
 
         // Clear any existing elements
         this.clearGameElements();
