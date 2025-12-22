@@ -87,6 +87,11 @@ const DrawingApp = {
     panStartX: 0,
     panStartY: 0,
 
+    // High DPI support
+    dpr: 1, // Device pixel ratio (calculado en init)
+    baseWidth: 0, // Tamaño CSS del canvas
+    baseHeight: 0,
+
     // Initialize
     init() {
         // Get elements
@@ -208,20 +213,19 @@ const DrawingApp = {
     getPos(e) {
         const rect = this.canvas.getBoundingClientRect();
 
-        // Posición del mouse relativa al canvas visual (escalado por CSS)
+        // Usar dimensiones CSS (sin DPR) porque el contexto está escalado
+        const cssWidth = this.baseWidth || rect.width;
+        const cssHeight = this.baseHeight || rect.height;
+
+        // Posición del mouse relativa al canvas visual (escalado por zoom CSS)
         const mouseX = e.clientX - rect.left;
         const mouseY = e.clientY - rect.top;
 
-        // El rect ya incluye el zoom visual, así que necesitamos convertir
-        // de coordenadas visuales a coordenadas internas del canvas
-        // rect.width = canvas.width * zoom (visualmente)
+        // Escala entre tamaño visual (con zoom) y tamaño CSS (sin zoom)
+        const scaleX = cssWidth / rect.width;
+        const scaleY = cssHeight / rect.height;
 
-        // Escala entre tamaño visual y tamaño interno
-        const scaleX = this.canvas.width / rect.width;
-        const scaleY = this.canvas.height / rect.height;
-
-        // Aplicar el pan (desplazamiento visual)
-        // El pan está en píxeles del canvas interno
+        // Convertir a coordenadas del canvas (sin zoom ni pan)
         const canvasX = mouseX * scaleX - this.panX * this.zoom * scaleX;
         const canvasY = mouseY * scaleY - this.panY * this.zoom * scaleY;
 
@@ -560,8 +564,11 @@ const DrawingApp = {
 
         const img = new Image();
         img.onload = () => {
-            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-            this.ctx.drawImage(img, 0, 0);
+            // Usar baseWidth/baseHeight porque el contexto está escalado
+            const w = this.baseWidth || this.canvas.width;
+            const h = this.baseHeight || this.canvas.height;
+            this.ctx.clearRect(0, 0, w, h);
+            this.ctx.drawImage(img, 0, 0, w, h);
             this.isRestoring = false;
             console.log('✅ Estado restaurado correctamente');
         };
@@ -574,8 +581,11 @@ const DrawingApp = {
 
     // Clear canvas
     clearCanvas() {
+        // Usar baseWidth/baseHeight porque el contexto está escalado
+        const w = this.baseWidth || this.canvas.width;
+        const h = this.baseHeight || this.canvas.height;
         this.ctx.fillStyle = '#FDFBF5';
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.fillRect(0, 0, w, h);
         this.saveState();
     },
 
@@ -797,17 +807,24 @@ const DrawingApp = {
             return;
         }
 
-        // Calcular tamaño del canvas (dejar margen para el wrapper)
-        const canvasWidth = Math.floor(wrapperRect.width - 20);
-        const canvasHeight = Math.floor(wrapperRect.height - 20);
+        // Calcular tamaño CSS del canvas (tamaño visual)
+        this.baseWidth = Math.floor(wrapperRect.width - 20);
+        this.baseHeight = Math.floor(wrapperRect.height - 20);
 
-        // Set canvas internal size
-        this.canvas.width = canvasWidth;
-        this.canvas.height = canvasHeight;
+        // Device Pixel Ratio para alta resolución (limitar a 2 para rendimiento)
+        this.dpr = Math.min(window.devicePixelRatio || 1, 2);
 
-        // Set canvas CSS size to match (tamaño fijo, no 100%)
-        this.canvas.style.width = canvasWidth + 'px';
-        this.canvas.style.height = canvasHeight + 'px';
+        // Set canvas internal size (multiplicado por DPR para alta resolución)
+        this.canvas.width = this.baseWidth * this.dpr;
+        this.canvas.height = this.baseHeight * this.dpr;
+
+        // Set canvas CSS size (tamaño visual, sin multiplicar)
+        this.canvas.style.width = this.baseWidth + 'px';
+        this.canvas.style.height = this.baseHeight + 'px';
+
+        // Escalar el contexto para que las operaciones de dibujo usen coordenadas CSS
+        this.ctx.setTransform(1, 0, 0, 1, 0, 0); // Reset transform
+        this.ctx.scale(this.dpr, this.dpr);
 
         // Reset context properties
         this.ctx.lineCap = 'round';
@@ -815,7 +832,7 @@ const DrawingApp = {
 
         // Always fill with white background first
         this.ctx.fillStyle = '#FDFBF5';
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.fillRect(0, 0, this.baseWidth, this.baseHeight);
 
         // Verificar si el historial existente es válido
         const hasValidHistory = this.history.length > 0 &&
@@ -827,7 +844,7 @@ const DrawingApp = {
             // Restaurar desde historial válido
             const img = new Image();
             img.onload = () => {
-                this.ctx.drawImage(img, 0, 0, this.canvas.width, this.canvas.height);
+                this.ctx.drawImage(img, 0, 0, this.baseWidth, this.baseHeight);
                 console.log('🎨 Canvas restaurado desde historial');
             };
             img.onerror = () => {
@@ -841,7 +858,7 @@ const DrawingApp = {
             this.resetHistory();
         }
 
-        console.log(`📐 Canvas inicializado: ${canvasWidth}x${canvasHeight}`);
+        console.log(`📐 Canvas inicializado: ${this.baseWidth}x${this.baseHeight} @ ${this.dpr}x DPR`);
     },
 
     // Resetear historial y guardar estado inicial limpio
@@ -849,9 +866,9 @@ const DrawingApp = {
         this.history = [];
         this.historyIndex = -1;
 
-        // Asegurar fondo blanco
+        // Asegurar fondo blanco (usar baseWidth/baseHeight porque ctx está escalado)
         this.ctx.fillStyle = '#FDFBF5';
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.fillRect(0, 0, this.baseWidth || this.canvas.width, this.baseHeight || this.canvas.height);
 
         // Guardar estado inicial válido
         this.saveState();
@@ -1218,18 +1235,19 @@ const DrawingApp = {
     applyTransform() {
         if (!this.canvas) return;
 
+        // Usar dimensiones CSS (sin DPR)
+        const w = this.baseWidth || this.canvas.width;
+        const h = this.baseHeight || this.canvas.height;
+
         // Si zoom es 1 o menor, no hay pan
         if (this.zoom <= 1) {
             this.panX = 0;
             this.panY = 0;
         } else {
             // Calcular el pan máximo permitido
-            // El canvas escalado es: canvasSize * zoom
-            // El área visible es: canvasSize (wrapper size ≈ canvas size)
-            // El exceso que se puede mover es: canvasSize * (zoom - 1) / 2
-            // Dividido por zoom porque el translate se aplica ANTES del scale
-            const maxPanX = (this.canvas.width * (this.zoom - 1)) / (2 * this.zoom);
-            const maxPanY = (this.canvas.height * (this.zoom - 1)) / (2 * this.zoom);
+            // Basado en el tamaño CSS, no el tamaño interno con DPR
+            const maxPanX = (w * (this.zoom - 1)) / (2 * this.zoom);
+            const maxPanY = (h * (this.zoom - 1)) / (2 * this.zoom);
 
             this.panX = Math.max(-maxPanX, Math.min(maxPanX, this.panX));
             this.panY = Math.max(-maxPanY, Math.min(maxPanY, this.panY));
