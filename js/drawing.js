@@ -113,27 +113,43 @@ const DrawingApp = {
         if (!this.canvas) return;
 
         const container = this.canvas.parentElement;
-        const availableHeight = window.innerHeight - 200; // Leave room for toolbar and gallery
-        const availableWidth = container.clientWidth - 20;
 
-        this.canvas.width = Math.min(800, availableWidth);
-        this.canvas.height = Math.min(600, availableHeight);
+        // Get the actual visible area
+        const rect = this.canvas.getBoundingClientRect();
+        const dpr = window.devicePixelRatio || 1;
 
-        // Reset context properties after resize
-        this.ctx.lineCap = 'round';
-        this.ctx.lineJoin = 'round';
+        // Use the CSS-rendered size for the canvas internal resolution
+        const displayWidth = rect.width;
+        const displayHeight = rect.height;
 
-        // Restore last state if exists
-        if (this.history.length > 0 && this.historyIndex >= 0) {
-            const img = new Image();
-            img.onload = () => {
-                this.ctx.drawImage(img, 0, 0);
-            };
-            img.src = this.history[this.historyIndex];
-        } else {
-            // Fill with white background
+        // Only resize if dimensions actually changed
+        if (this.canvas.width !== displayWidth || this.canvas.height !== displayHeight) {
+            // Save current drawing if exists
+            let currentDrawing = null;
+            if (this.history.length > 0 && this.historyIndex >= 0) {
+                currentDrawing = this.history[this.historyIndex];
+            }
+
+            // Set canvas internal size to match display size
+            this.canvas.width = displayWidth;
+            this.canvas.height = displayHeight;
+
+            // Reset context properties after resize
+            this.ctx.lineCap = 'round';
+            this.ctx.lineJoin = 'round';
+
+            // Fill with white background first
             this.ctx.fillStyle = '#FDFBF5';
             this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+            // Restore drawing if existed
+            if (currentDrawing) {
+                const img = new Image();
+                img.onload = () => {
+                    this.ctx.drawImage(img, 0, 0, this.canvas.width, this.canvas.height);
+                };
+                img.src = currentDrawing;
+            }
         }
     },
 
@@ -670,8 +686,43 @@ const DrawingApp = {
     open() {
         this.overlay?.classList.add('active');
         document.getElementById('drawButton')?.classList.remove('has-new');
-        this.resizeCanvas();
-        this.updateToolUI();
+
+        // Wait a frame for CSS to apply, then resize canvas
+        requestAnimationFrame(() => {
+            this.initializeCanvas();
+            this.updateToolUI();
+        });
+    },
+
+    // Initialize canvas with correct size and white background
+    initializeCanvas() {
+        if (!this.canvas) return;
+
+        const rect = this.canvas.getBoundingClientRect();
+
+        // Set canvas size to match display
+        this.canvas.width = rect.width;
+        this.canvas.height = rect.height;
+
+        // Reset context properties
+        this.ctx.lineCap = 'round';
+        this.ctx.lineJoin = 'round';
+
+        // Always fill with white background first
+        this.ctx.fillStyle = '#FDFBF5';
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+        // Restore from history if exists
+        if (this.history.length > 0 && this.historyIndex >= 0) {
+            const img = new Image();
+            img.onload = () => {
+                this.ctx.drawImage(img, 0, 0, this.canvas.width, this.canvas.height);
+            };
+            img.src = this.history[this.historyIndex];
+        } else {
+            // Save initial blank state
+            this.saveState();
+        }
     },
 
     // Close drawing overlay
