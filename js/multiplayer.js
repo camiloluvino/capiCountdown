@@ -20,6 +20,9 @@ const BasketMultiplayer = {
     // Callbacks
     onPartnerScoreUpdate: null,
 
+    // Handler reference for cleanup
+    _beforeUnloadHandler: null,
+
     // Inicializar el sistema
     init() {
         if (!window.database) {
@@ -170,7 +173,8 @@ const BasketMultiplayer = {
             this.listenToSession();
             this.showWaitingUI(code);
 
-            window.addEventListener('beforeunload', () => this.leaveSession());
+            // Bind beforeunload only once
+            this._bindBeforeUnload();
             console.log('🦫 Capibara session created:', code);
 
         } catch (error) {
@@ -209,7 +213,8 @@ const BasketMultiplayer = {
             this.listenToSession();
             this.showConnectedUI();
 
-            window.addEventListener('beforeunload', () => this.leaveSession());
+            // Bind beforeunload only once
+            this._bindBeforeUnload();
             console.log('🐢 Turtle joined session:', code);
 
         } catch (error) {
@@ -333,6 +338,9 @@ const BasketMultiplayer = {
 
         if (this.sessionRef) this.sessionRef.off();
 
+        // Remove beforeunload listener
+        this._unbindBeforeUnload();
+
         this.isConnected = false;
         this.sessionId = null;
         this.partnerId = null;
@@ -342,6 +350,21 @@ const BasketMultiplayer = {
 
     hasPartner() {
         return this.isConnected && this.partnerId !== null;
+    },
+
+    // Bind beforeunload only once (prevents memory leak from duplicate listeners)
+    _bindBeforeUnload() {
+        if (this._beforeUnloadHandler) return; // Already bound
+        this._beforeUnloadHandler = () => this.leaveSession();
+        window.addEventListener('beforeunload', this._beforeUnloadHandler);
+    },
+
+    // Remove beforeunload listener
+    _unbindBeforeUnload() {
+        if (this._beforeUnloadHandler) {
+            window.removeEventListener('beforeunload', this._beforeUnloadHandler);
+            this._beforeUnloadHandler = null;
+        }
     }
 };
 

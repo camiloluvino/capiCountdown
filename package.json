@@ -1,0 +1,14 @@
+{
+  "name": "capi-countdown",
+  "version": "1.4.0",
+  "description": "Contador regresivo Capibara con juegos y notas compartidas",
+  "scripts": {
+    "optimize-images": "node tools/optimize-images.js"
+  },
+  "devDependencies": {
+    "clean-css-cli": "^5.6.3",
+    "concat": "^1.0.3",
+    "sharp": "^0.34.5",
+    "terser": "^5.44.1"
+  }
+}

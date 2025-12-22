@@ -4,8 +4,10 @@
     --bg-color: #FDFCF5;
     --bg-gradient: linear-gradient(to bottom, #FDFCF5, #F4F1EA);
     --text-color: #5D5D5D;
-    --bamboo-color: #8FBC8F;
-    --bamboo-shadow: #556B2F;
+    --bamboo-color: #5E9B5E;
+    /* Más oscuro para mejor contraste (antes #8FBC8F) */
+    --bamboo-shadow: #3F5222;
+    /* Más oscuro (antes #556B2F) */
     --accent-color: #E6A57E;
     --glass-bg: rgba(255, 255, 255, 0.6);
     --glass-border: rgba(255, 255, 255, 0.4);
@@ -210,18 +212,8 @@ h1 {
     box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.bundle.completed::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background-color: #C19A6B;
-    transform: translateY(-50%);
-    z-index: 1;
-    border-radius: 2px;
-}
+/* Línea tachada eliminada para limpieza visual - usamos solo la diagonal */
+/* .bundle.completed::after { ... } */
 
 .days-left-text {
     margin-top: 50px;

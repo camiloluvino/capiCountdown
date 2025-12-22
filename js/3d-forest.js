@@ -188,7 +188,7 @@ function render3DLoop() {
     requestAnimationFrame(render3DLoop);
 }
 
-const spawnDebounceTimer = null;
+// Variable eliminada: spawnDebounceTimer (no se usaba)
 
 // Hook called by main script
 function addNoteTo3D(data) {
@@ -363,10 +363,7 @@ function createMushroomElement(x, y, z, scale) {
     return mushroom;
 }
 
-function escapeHtml3D(text) {
-    if (!text) return text;
-    return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-}
+// escapeHtml() ahora se carga desde utils.js
 
 function openNoteModal(data) {
     const modal = document.getElementById('note-reading-modal');
@@ -378,7 +375,7 @@ function openNoteModal(data) {
     const date = new Date(data.timestamp);
     const timeStr = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-    textEl.innerHTML = escapeHtml3D(data.text);
+    textEl.innerHTML = escapeHtml(data.text);  // Usa escapeHtml global
     // User Request: Remove "Enviado:" prefix, just show date/time
     metaEl.innerText = timeStr;
 

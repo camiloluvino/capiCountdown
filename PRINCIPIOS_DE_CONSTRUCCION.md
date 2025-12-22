@@ -6,6 +6,14 @@ Este documento define la "Constitución" del proyecto. Cualquier agente de IA o 
 *   **Vibe Coding:** El código debe ser limpio, pero la prioridad es la **experiencia de usuario** y la **estética**. Buscamos que el usuario sienta "paz" y diversión (estilo Capibara).
 *   **Estética:** Uso de fuentes amigables (`Outfit`, `Lora`), colores pasteles/naturales, bordes redondeados y animaciones suaves. Evitar diseños rígidos o corporativos.
 
+## 1.1 Contexto de Uso (Proyecto Personal/Privado) 🏠
+*   **Naturaleza:** Este es un proyecto **PRIVADO y PERSONAL** para uso exclusivo del usuario y sus allegados (pareja). NO es un producto SaaS ni una startup.
+*   **GitHub Pages:** La única razón por la que el repositorio es público es para habilitar el hosting gratuito en GitHub Pages.
+*   **PROHIBIDO SOBRE-INGENIERÍA:**
+    *   **NO implementar sistemas de build complejos** (Webpack, Parcel, minificadores) a menos que sea IMPRESCINDIBLE.
+    *   **NO crear archivos de producción separados** (`index.prod.html`, carpetas `dist/`) que dupliquen el mantenimiento.
+    *   **Prioridad:** El código debe ser legible y editable directamente (`index.html`, CSS vainilla, JS vainilla). La simplicidad supera a la optimización milimétrica de rendimiento.
+
 ## 2. Pilares de Funcionalidad (No Negociables) ⚓
 
 ### A. Modo Desarrollador Oculto ("God Mode") 🛠️

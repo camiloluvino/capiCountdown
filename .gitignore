@@ -10,3 +10,6 @@ __pycache__/
 node_modules/
 dist/
 .env
+
+# Firebase Secrets (no subir al repositorio)
+config/firebase-config.js

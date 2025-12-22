@@ -1,5 +1,5 @@
 ﻿// ==========================================
-// RIVER GAME - Cruzando el R�o (Horizontal Zen Version)
+// RIVER GAME - Cruzando el Río (Horizontal Zen Version)
 // ==========================================
 
 const RiverGame = {

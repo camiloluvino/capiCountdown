@@ -28,7 +28,7 @@ const DrawingApp = {
     // History for undo
     history: [],
     historyIndex: -1,
-    maxHistory: 30,
+    maxHistory: 10,  // Reducido de 30 para ahorrar memoria (~100MB max vs ~300MB)
     isRestoring: false, // Previene clics rápidos en undo
 
     // Paletas de materiales
