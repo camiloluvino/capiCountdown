@@ -730,52 +730,55 @@ const DrawingApp = {
         this.overlay?.classList.remove('active');
     },
 
-    // Save drawing to localStorage
+    // Save drawing to Firebase
     saveDrawing() {
         const saveBtn = document.getElementById('save-drawing');
         if (saveBtn) {
             saveBtn.disabled = true;
-            saveBtn.innerHTML = '💾 Guardando...';
+            saveBtn.innerHTML = '💾 Subiendo...';
         }
 
         try {
-            // Get existing drawings
-            const drawings = this.getStoredDrawings();
+            // Check if Firebase is available
+            if (typeof firebase === 'undefined' || !firebase.database) {
+                throw new Error('Firebase no disponible');
+            }
+
+            const db = firebase.database();
+            const drawingId = 'drawing_' + Date.now();
 
             // Create new drawing entry
             const newDrawing = {
-                id: 'drawing_' + Date.now(),
+                id: drawingId,
                 imageData: this.canvas.toDataURL('image/png'),
-                timestamp: Date.now()
+                timestamp: firebase.database.ServerValue.TIMESTAMP
             };
 
-            // Add to beginning (newest first)
-            drawings.unshift(newDrawing);
+            // Save to Firebase
+            db.ref('drawings/' + drawingId).set(newDrawing)
+                .then(() => {
+                    // Clear canvas after saving
+                    this.clearCanvas();
 
-            // Limit to 20 drawings
-            if (drawings.length > 20) {
-                drawings.pop();
-            }
+                    // Feedback
+                    if (saveBtn) {
+                        saveBtn.innerHTML = '✅ ¡Guardado!';
+                        setTimeout(() => {
+                            saveBtn.disabled = false;
+                            saveBtn.innerHTML = '💾 Guardar';
+                        }, 1500);
+                    }
 
-            // Save to localStorage
-            localStorage.setItem(this.storageKey, JSON.stringify(drawings));
-
-            // Clear canvas after saving
-            this.clearCanvas();
-
-            // Refresh gallery
-            this.loadGallery();
-
-            // Feedback
-            if (saveBtn) {
-                saveBtn.innerHTML = '✅ ¡Guardado!';
-                setTimeout(() => {
-                    saveBtn.disabled = false;
-                    saveBtn.innerHTML = '💾 Guardar';
-                }, 1500);
-            }
-
-            console.log('🎨 Dibujo guardado');
+                    console.log('🎨 Dibujo guardado en Firebase');
+                })
+                .catch((error) => {
+                    console.error('Error guardando en Firebase:', error);
+                    if (saveBtn) {
+                        saveBtn.disabled = false;
+                        saveBtn.innerHTML = '💾 Guardar';
+                    }
+                    alert('Error al guardar el dibujo');
+                });
 
         } catch (error) {
             console.error('Error guardando dibujo:', error);
@@ -787,32 +790,47 @@ const DrawingApp = {
         }
     },
 
-    // Get drawings from localStorage
-    getStoredDrawings() {
-        try {
-            const data = localStorage.getItem(this.storageKey);
-            return data ? JSON.parse(data) : [];
-        } catch (e) {
-            console.error('Error reading drawings:', e);
-            return [];
+    // Firebase reference for drawings
+    getDrawingsRef() {
+        if (typeof firebase !== 'undefined' && firebase.database) {
+            return firebase.database().ref('drawings');
         }
+        return null;
     },
 
-    // Load gallery from localStorage
+    // Load gallery from Firebase (realtime)
     loadGallery() {
         const gallery = document.getElementById('drawingGallery');
         if (!gallery) return;
 
-        const drawings = this.getStoredDrawings();
-        gallery.innerHTML = '';
-
-        if (drawings.length === 0) {
-            gallery.innerHTML = '<div class="gallery-empty">No hay dibujos guardados... ¡Crea el primero! 🎨</div>';
+        const ref = this.getDrawingsRef();
+        if (!ref) {
+            gallery.innerHTML = '<div class="gallery-empty">Firebase no disponible</div>';
             return;
         }
 
-        drawings.forEach(drawing => {
-            this.addToGallery(drawing);
+        // Show loading state
+        gallery.innerHTML = '<div class="gallery-empty">Cargando dibujos... ⏳</div>';
+
+        // Listen for changes in realtime
+        ref.orderByChild('timestamp').limitToLast(20).on('value', (snapshot) => {
+            gallery.innerHTML = '';
+
+            if (!snapshot.exists()) {
+                gallery.innerHTML = '<div class="gallery-empty">No hay dibujos guardados... ¡Crea el primero! 🎨</div>';
+                return;
+            }
+
+            // Convert to array and reverse (newest first)
+            const drawings = [];
+            snapshot.forEach(child => {
+                drawings.push(child.val());
+            });
+            drawings.reverse();
+
+            drawings.forEach(drawing => {
+                this.addToGallery(drawing);
+            });
         });
     },
 
@@ -870,32 +888,36 @@ const DrawingApp = {
         }
     },
 
-    // Delete drawing
+    // Delete drawing from Firebase
     deleteDrawing(id) {
         if (!confirm('¿Eliminar este dibujo?')) return;
 
-        const drawings = this.getStoredDrawings();
-        const filtered = drawings.filter(d => d.id !== id);
-        localStorage.setItem(this.storageKey, JSON.stringify(filtered));
+        const ref = this.getDrawingsRef();
+        if (!ref) {
+            console.error('Firebase no disponible');
+            return;
+        }
 
-        // Remove from DOM
+        // Animate removal
         const item = document.querySelector(`.gallery-item[data-id="${id}"]`);
         if (item) {
             item.style.transform = 'scale(0)';
             item.style.opacity = '0';
-            setTimeout(() => {
-                item.remove();
-                // Show empty state if no drawings left
-                if (filtered.length === 0) {
-                    const gallery = document.getElementById('drawingGallery');
-                    if (gallery) {
-                        gallery.innerHTML = '<div class="gallery-empty">No hay dibujos guardados... ¡Crea el primero! 🎨</div>';
-                    }
-                }
-            }, 200);
         }
 
-        console.log('🗑️ Dibujo eliminado:', id);
+        // Delete from Firebase (gallery will auto-update via listener)
+        ref.child(id).remove()
+            .then(() => {
+                console.log('🗑️ Dibujo eliminado de Firebase:', id);
+            })
+            .catch((error) => {
+                console.error('Error eliminando dibujo:', error);
+                // Revert animation if failed
+                if (item) {
+                    item.style.transform = '';
+                    item.style.opacity = '';
+                }
+            });
     },
 
     // Delete from modal
