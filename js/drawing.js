@@ -29,6 +29,7 @@ const DrawingApp = {
     history: [],
     historyIndex: -1,
     maxHistory: 30,
+    isRestoring: false, // Previene clics rápidos en undo
 
     // Paletas de materiales
     palettes: {
@@ -104,8 +105,8 @@ const DrawingApp = {
         // Load saved drawings from Firebase
         this.loadGallery();
 
-        // Initial state
-        this.saveState();
+        // NO guardar estado aquí - el canvas está oculto y tiene dimensiones 0x0
+        // El estado inicial se guarda en initializeCanvas() cuando se abre el overlay
         this.updateToolUI();
 
         console.log('🎨 Drawing App initialized with materials');
@@ -480,11 +481,14 @@ const DrawingApp = {
 
     // Save state for undo
     saveState() {
-        // Remove any states after current index
+        if (!this.canvas) return;
+
+        // Remove any states after current index (for redo support in future)
         this.history = this.history.slice(0, this.historyIndex + 1);
 
         // Add current state
-        this.history.push(this.canvas.toDataURL());
+        const dataUrl = this.canvas.toDataURL();
+        this.history.push(dataUrl);
         this.historyIndex++;
 
         // Limit history size
@@ -492,24 +496,52 @@ const DrawingApp = {
             this.history.shift();
             this.historyIndex--;
         }
+
+        console.log(`📝 Estado guardado. Historial: ${this.history.length}, Índice: ${this.historyIndex}`);
     },
 
     // Undo
     undo() {
+        console.log(`↩️ Undo llamado. Historial: ${this.history.length}, Índice actual: ${this.historyIndex}, Restaurando: ${this.isRestoring}`);
+
+        // Prevenir clics rápidos mientras se restaura
+        if (this.isRestoring) {
+            console.log('⏳ Esperando restauración anterior...');
+            return;
+        }
+
         if (this.historyIndex > 0) {
             this.historyIndex--;
+            console.log(`↩️ Restaurando al índice: ${this.historyIndex}`);
             this.restoreState();
+        } else {
+            console.log('↩️ No hay más estados para deshacer (ya estás en el estado inicial)');
         }
     },
 
     // Restore from history
     restoreState() {
+        if (this.historyIndex < 0 || this.historyIndex >= this.history.length) {
+            console.error('❌ Índice de historial inválido:', this.historyIndex);
+            return;
+        }
+
+        this.isRestoring = true;
+        const dataUrl = this.history[this.historyIndex];
+        console.log(`🔄 Restaurando estado ${this.historyIndex}...`);
+
         const img = new Image();
         img.onload = () => {
             this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
             this.ctx.drawImage(img, 0, 0);
+            this.isRestoring = false;
+            console.log('✅ Estado restaurado correctamente');
         };
-        img.src = this.history[this.historyIndex];
+        img.onerror = () => {
+            this.isRestoring = false;
+            console.error('❌ Error cargando imagen del historial');
+        };
+        img.src = dataUrl;
     },
 
     // Clear canvas
@@ -717,6 +749,12 @@ const DrawingApp = {
 
         const rect = this.canvas.getBoundingClientRect();
 
+        // Verificar que el canvas tenga dimensiones válidas
+        if (rect.width === 0 || rect.height === 0) {
+            console.warn('⚠️ Canvas tiene dimensiones 0, esperando...');
+            return;
+        }
+
         // Set canvas size to match display
         this.canvas.width = rect.width;
         this.canvas.height = rect.height;
@@ -729,17 +767,43 @@ const DrawingApp = {
         this.ctx.fillStyle = '#FDFBF5';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-        // Restore from history if exists
-        if (this.history.length > 0 && this.historyIndex >= 0) {
+        // Verificar si el historial existente es válido
+        const hasValidHistory = this.history.length > 0 &&
+            this.historyIndex >= 0 &&
+            this.history[0] &&
+            this.history[0].length > 100; // dataURL válido tiene más de 100 chars
+
+        if (hasValidHistory) {
+            // Restaurar desde historial válido
             const img = new Image();
             img.onload = () => {
                 this.ctx.drawImage(img, 0, 0, this.canvas.width, this.canvas.height);
+                console.log('🎨 Canvas restaurado desde historial');
+            };
+            img.onerror = () => {
+                console.warn('⚠️ Historial corrupto, reiniciando...');
+                this.resetHistory();
             };
             img.src = this.history[this.historyIndex];
         } else {
-            // Save initial blank state
-            this.saveState();
+            // Limpiar historial corrupto y guardar estado inicial válido
+            console.log('🎨 Iniciando canvas limpio');
+            this.resetHistory();
         }
+    },
+
+    // Resetear historial y guardar estado inicial limpio
+    resetHistory() {
+        this.history = [];
+        this.historyIndex = -1;
+
+        // Asegurar fondo blanco
+        this.ctx.fillStyle = '#FDFBF5';
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+        // Guardar estado inicial válido
+        this.saveState();
+        console.log('✅ Historial reiniciado con estado inicial válido');
     },
 
     // Close drawing overlay
