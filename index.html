@@ -24,6 +24,7 @@
     <link rel="stylesheet" href="css/3d-forest.css">
     <link rel="stylesheet" href="css/admin.css">
     <link rel="stylesheet" href="css/multiplayer.css">
+    <link rel="stylesheet" href="css/drawing.css">
 </head>
 
 <body>
@@ -37,6 +38,7 @@
     <button class="theme-toggle" id="themeToggle" title="Cambiar tema">🌙</button>
     <button class="play-button" id="playButton" title="Jugar: La Cesta de Regalos">🧺</button>
     <button class="river-button" id="riverButton" title="Jugar: Cruzando el Río">🌊</button>
+    <button class="draw-button" id="drawButton" title="Dibujar">🎨</button>
 
     <!-- Game Overlay (Cesta de Regalos) -->
     <div id="game-overlay">
@@ -217,6 +219,136 @@
         <div id="nav-hint">Usa la rueda del ratón o desliza para caminar</div>
     </div>
 
+    <!-- Drawing Overlay -->
+    <div id="drawing-overlay">
+        <button class="game-close" id="closeDraw">✕</button>
+
+        <div class="drawing-container">
+            <canvas id="drawCanvas"></canvas>
+
+            <div class="drawing-toolbar">
+                <!-- Herramientas básicas -->
+                <button class="tool-btn active" id="tool-pencil" title="Lápiz">✏️</button>
+                <button class="tool-btn" id="tool-eraser" title="Borrador">🧹</button>
+
+                <div class="tool-divider"></div>
+
+                <!-- Paletas de Materiales -->
+                <div class="material-palettes">
+                    <!-- Paleta Grafito -->
+                    <div style="position: relative;">
+                        <button class="palette-btn graphite active" id="palette-graphite" title="Lápiz Grafito">
+                            ✎
+                        </button>
+                        <div class="palette-dropdown" id="dropdown-graphite">
+                            <div class="palette-title">Grafito</div>
+                            <div class="palette-colors">
+                                <button class="color-btn graphite-color active" data-color="#1a1a1a"
+                                    data-material="graphite" style="background:#1a1a1a" title="Negro"></button>
+                                <button class="color-btn graphite-color" data-color="#2d2d2d" data-material="graphite"
+                                    style="background:#2d2d2d" title="Carbón"></button>
+                                <button class="color-btn graphite-color" data-color="#4a4a4a" data-material="graphite"
+                                    style="background:#4a4a4a" title="Oscuro"></button>
+                                <button class="color-btn graphite-color" data-color="#666666" data-material="graphite"
+                                    style="background:#666666" title="Medio"></button>
+                                <button class="color-btn graphite-color" data-color="#888888" data-material="graphite"
+                                    style="background:#888888" title="Gris"></button>
+                                <button class="color-btn graphite-color" data-color="#aaaaaa" data-material="graphite"
+                                    style="background:#aaaaaa" title="Claro"></button>
+                                <button class="color-btn graphite-color" data-color="#cccccc" data-material="graphite"
+                                    style="background:#cccccc" title="Plata"></button>
+                                <button class="color-btn graphite-color" data-color="#e0e0e0" data-material="graphite"
+                                    style="background:#e0e0e0" title="Suave"></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Paleta Acuarela -->
+                    <div style="position: relative;">
+                        <button class="palette-btn watercolor" id="palette-watercolor" title="Acuarela">
+                            🎨
+                        </button>
+                        <div class="palette-dropdown" id="dropdown-watercolor">
+                            <div class="palette-title">Acuarela</div>
+                            <div class="palette-colors">
+                                <button class="color-btn watercolor-color" data-color="#C94C4C"
+                                    data-material="watercolor" style="background:#C94C4C" title="Rojo"></button>
+                                <button class="color-btn watercolor-color" data-color="#E8A87C"
+                                    data-material="watercolor" style="background:#E8A87C" title="Naranja"></button>
+                                <button class="color-btn watercolor-color" data-color="#F7D794"
+                                    data-material="watercolor" style="background:#F7D794" title="Amarillo"></button>
+                                <button class="color-btn watercolor-color" data-color="#7BAE7F"
+                                    data-material="watercolor" style="background:#7BAE7F" title="Verde"></button>
+                                <button class="color-btn watercolor-color" data-color="#5B8FA8"
+                                    data-material="watercolor" style="background:#5B8FA8" title="Azul"></button>
+                                <button class="color-btn watercolor-color" data-color="#6B5B95"
+                                    data-material="watercolor" style="background:#6B5B95" title="Púrpura"></button>
+                                <button class="color-btn watercolor-color" data-color="#E6A8D7"
+                                    data-material="watercolor" style="background:#E6A8D7" title="Rosa"></button>
+                                <button class="color-btn watercolor-color" data-color="#5D4E37"
+                                    data-material="watercolor" style="background:#5D4E37" title="Marrón"></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tool-divider"></div>
+
+                <!-- Selector de Grosor -->
+                <div class="size-selector">
+                    <button class="size-trigger" id="size-trigger" title="Grosor">
+                        <div class="size-preview">
+                            <span class="size-preview-dot" style="width:6px; height:6px;"></span>
+                        </div>
+                    </button>
+                    <div class="size-dropdown" id="size-dropdown">
+                        <div class="size-option" data-size="2">
+                            <span class="size-dot s1"></span>
+                            <span class="size-label">Muy fino</span>
+                        </div>
+                        <div class="size-option active" data-size="5">
+                            <span class="size-dot s2"></span>
+                            <span class="size-label">Fino</span>
+                        </div>
+                        <div class="size-option" data-size="12">
+                            <span class="size-dot s3"></span>
+                            <span class="size-label">Medio</span>
+                        </div>
+                        <div class="size-option" data-size="24">
+                            <span class="size-dot s4"></span>
+                            <span class="size-label">Grueso</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tool-divider"></div>
+
+                <!-- Acciones -->
+                <button class="tool-btn" id="tool-undo" title="Deshacer">↩️</button>
+                <button class="tool-btn" id="tool-clear" title="Limpiar">🗑️</button>
+
+                <div class="tool-divider"></div>
+
+                <!-- Guardar (más pequeño) -->
+                <button class="save-drawing-btn" id="save-drawing">💾 Guardar</button>
+            </div>
+        </div>
+
+        <div class="drawing-gallery" id="drawingGallery">
+            <div class="gallery-empty">No hay dibujos guardados...</div>
+        </div>
+    </div>
+
+    <!-- Drawing Modal (View Large) -->
+    <div class="drawing-modal" id="drawing-modal">
+        <button class="close-modal" id="closeDrawingModal">✕</button>
+        <img id="modalDrawingImg" src="" alt="Dibujo">
+        <div class="modal-actions">
+            <button class="modal-delete-btn" id="modalDeleteBtn">🗑️ Eliminar</button>
+        </div>
+    </div>
+
+
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
@@ -225,6 +357,7 @@
     <script src="js/basket-game.js"></script>
     <script src="js/river-game.js"></script>
     <script src="js/multiplayer.js"></script>
+    <script src="js/drawing.js"></script>
 </body>
 
 </html>
