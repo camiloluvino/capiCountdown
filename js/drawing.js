@@ -208,22 +208,22 @@ const DrawingApp = {
     getPos(e) {
         const rect = this.canvas.getBoundingClientRect();
 
-        // Posición del mouse relativa al canvas visual
+        // Posición del mouse relativa al canvas visual (escalado por CSS)
         const mouseX = e.clientX - rect.left;
         const mouseY = e.clientY - rect.top;
 
-        // Convertir a coordenadas del canvas interno (considerando zoom y pan)
-        // El canvas se escala desde el centro
-        const centerX = rect.width / 2;
-        const centerY = rect.height / 2;
+        // El rect ya incluye el zoom visual, así que necesitamos convertir
+        // de coordenadas visuales a coordenadas internas del canvas
+        // rect.width = canvas.width * zoom (visualmente)
 
-        // Posición relativa al centro
-        const relX = mouseX - centerX;
-        const relY = mouseY - centerY;
+        // Escala entre tamaño visual y tamaño interno
+        const scaleX = this.canvas.width / rect.width;
+        const scaleY = this.canvas.height / rect.height;
 
-        // Aplicar inversa del zoom y pan
-        const canvasX = (relX / this.zoom - this.panX) + this.canvas.width / 2;
-        const canvasY = (relY / this.zoom - this.panY) + this.canvas.height / 2;
+        // Aplicar el pan (desplazamiento visual)
+        // El pan está en píxeles del canvas interno
+        const canvasX = mouseX * scaleX - this.panX * this.zoom * scaleX;
+        const canvasY = mouseY * scaleY - this.panY * this.zoom * scaleY;
 
         return { x: canvasX, y: canvasY };
     },
@@ -782,17 +782,32 @@ const DrawingApp = {
     initializeCanvas() {
         if (!this.canvas) return;
 
-        const rect = this.canvas.getBoundingClientRect();
-
-        // Verificar que el canvas tenga dimensiones válidas
-        if (rect.width === 0 || rect.height === 0) {
-            console.warn('⚠️ Canvas tiene dimensiones 0, esperando...');
+        // Obtener el tamaño del wrapper container
+        const wrapper = document.getElementById('canvasWrapper');
+        if (!wrapper) {
+            console.warn('⚠️ Canvas wrapper no encontrado');
             return;
         }
 
-        // Set canvas size to match display
-        this.canvas.width = rect.width;
-        this.canvas.height = rect.height;
+        const wrapperRect = wrapper.getBoundingClientRect();
+
+        // Verificar que el wrapper tenga dimensiones válidas
+        if (wrapperRect.width === 0 || wrapperRect.height === 0) {
+            console.warn('⚠️ Wrapper tiene dimensiones 0, esperando...');
+            return;
+        }
+
+        // Calcular tamaño del canvas (dejar margen para el wrapper)
+        const canvasWidth = Math.floor(wrapperRect.width - 20);
+        const canvasHeight = Math.floor(wrapperRect.height - 20);
+
+        // Set canvas internal size
+        this.canvas.width = canvasWidth;
+        this.canvas.height = canvasHeight;
+
+        // Set canvas CSS size to match (tamaño fijo, no 100%)
+        this.canvas.style.width = canvasWidth + 'px';
+        this.canvas.style.height = canvasHeight + 'px';
 
         // Reset context properties
         this.ctx.lineCap = 'round';
@@ -825,6 +840,8 @@ const DrawingApp = {
             console.log('🎨 Iniciando canvas limpio');
             this.resetHistory();
         }
+
+        console.log(`📐 Canvas inicializado: ${canvasWidth}x${canvasHeight}`);
     },
 
     // Resetear historial y guardar estado inicial limpio
