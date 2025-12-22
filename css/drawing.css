@@ -297,25 +297,29 @@
     justify-content: center;
 }
 
-/* Colores individuales - SLIM */
+/* Colores individuales - SLIM con hover mejorado */
 .color-btn {
     width: 22px;
     height: 22px;
     border-radius: 50%;
     border: 1.5px solid rgba(255, 255, 255, 0.9);
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.15s ease;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+    position: relative;
 }
 
 .color-btn:hover {
-    transform: scale(1.15);
+    transform: scale(1.25) translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    border-color: rgba(255, 255, 255, 1);
+    z-index: 10;
 }
 
 .color-btn.active {
     border-color: var(--draw-bark);
     transform: scale(1.1);
-    box-shadow: 0 0 0 1.5px var(--draw-bark);
+    box-shadow: 0 0 0 2px var(--draw-bark), 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
 /* Efectos de materiales */
