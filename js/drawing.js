@@ -98,7 +98,10 @@ const DrawingApp = {
         this.setupPaletteDropdowns();
         this.setupSizeDropdown();
 
-        // Load saved drawings
+        // Clean up old localStorage drawings (migrated to Firebase)
+        this.cleanupLegacyDrawings();
+
+        // Load saved drawings from Firebase
         this.loadGallery();
 
         // Initial state
@@ -106,6 +109,20 @@ const DrawingApp = {
         this.updateToolUI();
 
         console.log('🎨 Drawing App initialized with materials');
+    },
+
+    // Clean up old localStorage drawings (from before Firebase migration)
+    cleanupLegacyDrawings() {
+        try {
+            const oldData = localStorage.getItem(this.storageKey);
+            if (oldData) {
+                console.log('🧹 Cleaning up legacy localStorage drawings...');
+                localStorage.removeItem(this.storageKey);
+                console.log('✅ Legacy drawings cleaned up');
+            }
+        } catch (e) {
+            console.error('Error cleaning up legacy drawings:', e);
+        }
     },
 
     // Resize canvas to maximize space
