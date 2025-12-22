@@ -106,15 +106,20 @@ body.night-mode .note-3d {
 }
 
 #note-reading-modal .modal-content {
-    background: #fffaf0;
+    background: #fffef8;
+    background-image: linear-gradient(#ebebeb .1em, transparent .1em);
+    background-size: 100% 1.5em;
     padding: 40px;
-    width: 80%;
-    max-width: 500px;
-    border-radius: 8px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    width: 90%;
+    max-width: 650px;
+    max-height: 75vh;
+    overflow-y: auto;
+    box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.2);
     position: relative;
     text-align: center;
-    font-family: 'Lora', serif;
+    font-family: 'Indie Flower', cursive;
+    transform: rotate(-1deg);
+    /* Slight rotation opposite to write modal for variety */
 }
 
 #close-modal-btn {
@@ -127,21 +132,30 @@ body.night-mode .note-3d {
 }
 
 #modal-text {
-    font-size: 1.4rem;
-    color: #333;
+    font-size: 1.8rem;
+    /* Matches textarea size */
+    color: #2c3e50;
     margin-bottom: 20px;
-    line-height: 1.5;
+    line-height: 1.5em;
+    /* Matches background lines */
+    text-align: left;
+    /* Handwritten notes usually left aligned or natural */
+    white-space: pre-wrap;
+    /* Preserve line breaks */
 }
 
 #modal-meta {
-    font-size: 0.9rem;
+    font-size: 1rem;
     color: #666;
     font-style: italic;
-    border-top: 1px solid #ddd;
+    border-top: none;
+    /* Removed border for cleaner look */
     padding-top: 10px;
+    text-align: right;
+    font-family: 'Indie Flower', cursive;
 }
 
-/* Simple Trees (CSS Only) */
+/* Simple Trees (CSS Only) - Original Oak-like */
 .tree-3d {
     --tree-color: #2E8B57;
     position: absolute;
@@ -165,6 +179,118 @@ body.night-mode .note-3d {
     left: -10px;
 }
 
+/* Pine Trees - Taller and narrower with multiple layers */
+.tree-3d.pine {
+    border-left-width: 40px;
+    border-right-width: 40px;
+    border-bottom-width: 180px;
+}
+
+.tree-3d.pine::before {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-left: 50px solid transparent;
+    border-right: 50px solid transparent;
+    border-bottom: 140px solid var(--tree-color);
+    bottom: 60px;
+    left: -50px;
+    filter: brightness(1.1);
+}
+
+.tree-3d.pine::after {
+    width: 16px;
+    height: 50px;
+    bottom: -170px;
+    left: -8px;
+    background: #654321;
+}
+
+/* Birch Trees - White trunk, rounder top */
+.tree-3d.birch {
+    border-left-width: 70px;
+    border-right-width: 70px;
+    border-bottom-width: 160px;
+    border-radius: 50% 50% 0 0;
+}
+
+.tree-3d.birch::after {
+    background: linear-gradient(90deg, #f5f5dc 0%, #dcdcdc 30%, #f5f5dc 50%, #dcdcdc 70%, #f5f5dc 100%);
+    width: 14px;
+    height: 60px;
+    bottom: -150px;
+    left: -7px;
+}
+
+/* Bushes - Small round vegetation */
+.bush-3d {
+    --bush-color: #228B22;
+    position: absolute;
+    width: 80px;
+    height: 50px;
+    background: var(--bush-color);
+    border-radius: 50% 50% 40% 40%;
+    left: 50%;
+    top: 50%;
+    transform-origin: bottom center;
+    box-shadow: inset -10px -10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.bush-3d::before {
+    content: '';
+    position: absolute;
+    width: 60px;
+    height: 40px;
+    background: var(--bush-color);
+    border-radius: 50%;
+    top: -20px;
+    left: 10px;
+    filter: brightness(1.1);
+}
+
+/* Flowers - Small decorative elements */
+.flower-3d {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    left: 50%;
+    top: 50%;
+    transform-origin: bottom center;
+}
+
+.flower-3d::before {
+    content: '🌸';
+    font-size: 1.5rem;
+    position: absolute;
+    bottom: 0;
+}
+
+.flower-3d.yellow::before {
+    content: '🌼';
+}
+
+.flower-3d.red::before {
+    content: '🌺';
+}
+
+.flower-3d.tulip::before {
+    content: '🌷';
+}
+
+/* Mushrooms - Small forest details */
+.mushroom-3d {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform-origin: bottom center;
+}
+
+.mushroom-3d::before {
+    content: '🍄';
+    font-size: 1.2rem;
+}
+
 /* Fog & UI */
 #forest-fog {
     position: absolute;
@@ -179,6 +305,167 @@ body.night-mode .note-3d {
 
 body.night-mode #forest-fog {
     background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(11, 16, 38, 0.8) 80%, #0B1026 100%);
+}
+
+/* Ground / Floor gradient */
+#forest-ground {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    pointer-events: none;
+    background: linear-gradient(to top,
+            #4a6741 0%,
+            /* Solid forest green at bottom */
+            rgba(74, 103, 65, 0.95) 15%,
+            /* Almost solid */
+            rgba(85, 128, 70, 0.7) 35%,
+            /* Medium green */
+            rgba(120, 160, 90, 0.4) 55%,
+            /* Light green */
+            rgba(255, 255, 255, 0) 100%
+            /* Transparent at top */
+        );
+    z-index: 60;
+}
+
+body.night-mode #forest-ground {
+    background: linear-gradient(to top,
+            #1a2a1f 0%,
+            /* Very dark green at bottom */
+            rgba(26, 42, 31, 0.95) 15%,
+            /* Almost solid */
+            rgba(35, 55, 40, 0.7) 35%,
+            /* Dark forest */
+            rgba(45, 70, 50, 0.4) 55%,
+            /* Subtle dark */
+            rgba(0, 0, 0, 0) 100%
+            /* Transparent at top */
+        );
+}
+
+/* Ghost Note (Add New) */
+.note-3d.ghost {
+    background: #fff9c4;
+    /* Opaque Post-it Yellow */
+    border: 3px dashed #FF6347;
+    /* High contrast dashed border */
+    color: #FF6347;
+    opacity: 0.9;
+    animation: floatGhost 3s ease-in-out infinite;
+}
+
+.note-3d.ghost::after {
+    content: "NUEVA";
+    /* Clear text */
+    font-size: 0.8rem;
+    font-weight: bold;
+    left: 10%;
+    top: 35%;
+    filter: none;
+    font-family: 'Outfit', sans-serif;
+}
+
+.note-3d.ghost:hover {
+    background: #fff;
+    transform: scale(1.2);
+    box-shadow: 0 0 25px rgba(255, 99, 71, 0.6);
+    border-style: solid;
+    cursor: pointer;
+    z-index: 2000;
+}
+
+@keyframes floatGhost {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+/* Note Writing Modal - Handwritten */
+#note-writing-modal {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 300;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+}
+
+#note-writing-modal.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+#note-writing-modal .modal-content {
+    background: #fffef8;
+    background-image: linear-gradient(#ebebeb .1em, transparent .1em);
+    background-size: 100% 1.5em;
+    padding: 40px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.2);
+    position: relative;
+    text-align: center;
+    font-family: 'Indie Flower', cursive;
+    transform: rotate(1deg);
+}
+
+#note-writing-modal textarea {
+    width: 100%;
+    height: 150px;
+    background: transparent;
+    border: none;
+    font-family: 'Indie Flower', cursive;
+    font-size: 1.8rem;
+    color: #2c3e50;
+    line-height: 1.5em;
+    resize: none;
+    outline: none;
+    margin-top: 20px;
+}
+
+#note-writing-modal button {
+    margin-top: 20px;
+    font-family: 'Indie Flower', cursive;
+    font-size: 1.5rem;
+    font-weight: bold;
+    padding: 10px 30px;
+    background: #2E8B57;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    /* Less round for handwritten feel? Or sketchy? */
+    cursor: pointer;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s;
+}
+
+#note-writing-modal button:hover {
+    transform: scale(1.05);
+    background: #3CB371;
+}
+
+#close-write-modal-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #888;
 }
 
 #exit-3d-btn {
@@ -208,4 +495,291 @@ body.night-mode #forest-fog {
     border-radius: 20px;
     z-index: 200;
     pointer-events: none;
+}
+
+/* NEW UI Button */
+#forest-add-note-btn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    /* Top Left to balance Exit Button (Top Right) */
+    z-index: 200;
+    background: #fff9c4;
+    /* Match note color */
+    color: #8B4513;
+    border: 2px solid #8B4513;
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-family: 'Outfit', sans-serif;
+    /* Or 'Indie Flower' */
+    font-weight: bold;
+    font-size: 1rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    display: none;
+    /* Hidden by default */
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+#forest-add-note-btn:hover {
+    transform: scale(1.05);
+    background: #ffffff;
+    box-shadow: 0 6px 15px rgba(255, 215, 0, 0.4);
+}
+
+/* Go to End Button */
+#forest-go-end-btn {
+    position: fixed;
+    top: 80px;
+    /* Below the add note button */
+    left: 20px;
+    z-index: 200;
+    background: #87CEEB;
+    /* Sky blue */
+    color: #2c3e50;
+    border: 2px solid #4682B4;
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-family: 'Outfit', sans-serif;
+    font-weight: bold;
+    font-size: 1rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    display: none;
+    transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+#forest-go-end-btn:hover {
+    transform: scale(1.05);
+    background: #B0E0E6;
+    box-shadow: 0 6px 15px rgba(70, 130, 180, 0.4);
+}
+
+/* ========== FOREST PARTICLES ========== */
+#forest-particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 50;
+    /* Lower than notes (which are in forest-world) to not block clicks */
+    overflow: hidden;
+}
+
+/* Falling Leaves (Day Mode) */
+.forest-particle {
+    position: absolute;
+    font-size: 1.2rem;
+    opacity: 0.8;
+    animation: particleFall linear infinite;
+    pointer-events: none;
+}
+
+@keyframes particleFall {
+    0% {
+        transform: translateY(-20px) translateX(0) rotate(0deg);
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 0.8;
+    }
+
+    90% {
+        opacity: 0.8;
+    }
+
+    100% {
+        transform: translateY(100vh) translateX(50px) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* Leaf sway animation */
+.forest-particle.leaf {
+    animation: leafFall linear infinite, leafSway ease-in-out infinite;
+}
+
+@keyframes leafFall {
+    0% {
+        top: -5%;
+        opacity: 0;
+    }
+
+    5% {
+        opacity: 0.9;
+    }
+
+    95% {
+        opacity: 0.7;
+    }
+
+    100% {
+        top: 105%;
+        opacity: 0;
+    }
+}
+
+@keyframes leafSway {
+
+    0%,
+    100% {
+        transform: translateX(0) rotate(0deg);
+    }
+
+    25% {
+        transform: translateX(30px) rotate(15deg);
+    }
+
+    50% {
+        transform: translateX(-10px) rotate(-10deg);
+    }
+
+    75% {
+        transform: translateX(20px) rotate(10deg);
+    }
+}
+
+/* Fireflies (Night Mode) */
+body.night-mode .forest-particle.leaf {
+    display: none;
+}
+
+.forest-particle.firefly {
+    display: none;
+    width: 6px;
+    height: 6px;
+    background: radial-gradient(circle, #ffff88 0%, #ffcc00 50%, transparent 70%);
+    border-radius: 50%;
+    box-shadow: 0 0 10px 4px rgba(255, 255, 100, 0.6);
+    animation: fireflyFloat 8s ease-in-out infinite, fireflyGlow 2s ease-in-out infinite alternate;
+}
+
+body.night-mode .forest-particle.firefly {
+    display: block;
+}
+
+@keyframes fireflyFloat {
+
+    0%,
+    100% {
+        transform: translate(0, 0);
+    }
+
+    25% {
+        transform: translate(40px, -30px);
+    }
+
+    50% {
+        transform: translate(-20px, 20px);
+    }
+
+    75% {
+        transform: translate(30px, 40px);
+    }
+}
+
+@keyframes fireflyGlow {
+    0% {
+        opacity: 0.3;
+        box-shadow: 0 0 5px 2px rgba(255, 255, 100, 0.3);
+    }
+
+    100% {
+        opacity: 1;
+        box-shadow: 0 0 15px 6px rgba(255, 255, 100, 0.8);
+    }
+}
+
+/* ========== SUN RAYS (GOD RAYS) ========== */
+/* Isolated visual effect - does NOT affect any existing elements */
+#sun-rays {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    /* CRITICAL: Never block clicks */
+    z-index: 55;
+    /* Between particles (50) and ground layer (60) */
+    overflow: hidden;
+    opacity: 0.35;
+}
+
+/* Hide in night mode */
+body.night-mode #sun-rays {
+    display: none;
+}
+
+/* Individual sun ray */
+.sun-ray {
+    position: absolute;
+    top: -10%;
+    width: 150px;
+    height: 120%;
+    background: linear-gradient(180deg,
+            rgba(255, 253, 208, 0.8) 0%,
+            rgba(255, 246, 143, 0.4) 20%,
+            rgba(255, 255, 255, 0.1) 60%,
+            transparent 100%);
+    transform-origin: top center;
+    animation: rayPulse 8s ease-in-out infinite;
+    filter: blur(8px);
+}
+
+/* Vary each ray position and timing */
+.sun-ray:nth-child(1) {
+    left: 5%;
+    transform: rotate(15deg);
+    animation-delay: 0s;
+    width: 120px;
+}
+
+.sun-ray:nth-child(2) {
+    left: 25%;
+    transform: rotate(25deg);
+    animation-delay: -2s;
+    width: 180px;
+    opacity: 0.7;
+}
+
+.sun-ray:nth-child(3) {
+    left: 45%;
+    transform: rotate(10deg);
+    animation-delay: -4s;
+    width: 100px;
+}
+
+.sun-ray:nth-child(4) {
+    left: 60%;
+    transform: rotate(20deg);
+    animation-delay: -1s;
+    width: 160px;
+    opacity: 0.6;
+}
+
+.sun-ray:nth-child(5) {
+    left: 80%;
+    transform: rotate(30deg);
+    animation-delay: -3s;
+    width: 130px;
+    opacity: 0.8;
+}
+
+/* Subtle pulsing animation */
+@keyframes rayPulse {
+
+    0%,
+    100% {
+        opacity: 0.6;
+        transform: rotate(var(--base-rotation, 15deg)) scaleY(1);
+    }
+
+    50% {
+        opacity: 1;
+        transform: rotate(var(--base-rotation, 15deg)) scaleY(1.05);
+    }
 }
