@@ -811,8 +811,8 @@ const DrawingApp = {
         this.baseWidth = Math.floor(wrapperRect.width - 20);
         this.baseHeight = Math.floor(wrapperRect.height - 20);
 
-        // Device Pixel Ratio para alta resolución (limitar a 2 para rendimiento)
-        this.dpr = Math.min(window.devicePixelRatio || 1, 2);
+        // Device Pixel Ratio para alta resolución (limitar a 3 para balance rendimiento/nitidez)
+        this.dpr = Math.min(window.devicePixelRatio || 1, 3);
 
         // Set canvas internal size (multiplicado por DPR para alta resolución)
         this.canvas.width = this.baseWidth * this.dpr;
