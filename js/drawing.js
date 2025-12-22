@@ -1218,10 +1218,22 @@ const DrawingApp = {
     applyTransform() {
         if (!this.canvas) return;
 
-        // Limitar el pan para que no se salga mucho del visible
-        const maxPan = (this.zoom - 1) * (this.canvas.width / 2) / this.zoom;
-        this.panX = Math.max(-maxPan, Math.min(maxPan, this.panX));
-        this.panY = Math.max(-maxPan, Math.min(maxPan, this.panY));
+        // Si zoom es 1 o menor, no hay pan
+        if (this.zoom <= 1) {
+            this.panX = 0;
+            this.panY = 0;
+        } else {
+            // Calcular el pan máximo permitido
+            // El canvas escalado es: canvasSize * zoom
+            // El área visible es: canvasSize (wrapper size ≈ canvas size)
+            // El exceso que se puede mover es: canvasSize * (zoom - 1) / 2
+            // Dividido por zoom porque el translate se aplica ANTES del scale
+            const maxPanX = (this.canvas.width * (this.zoom - 1)) / (2 * this.zoom);
+            const maxPanY = (this.canvas.height * (this.zoom - 1)) / (2 * this.zoom);
+
+            this.panX = Math.max(-maxPanX, Math.min(maxPanX, this.panX));
+            this.panY = Math.max(-maxPanY, Math.min(maxPanY, this.panY));
+        }
 
         this.canvas.style.transform = `scale(${this.zoom}) translate(${this.panX}px, ${this.panY}px)`;
         this.canvas.style.transformOrigin = 'center center';
