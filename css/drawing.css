@@ -492,6 +492,120 @@
 }
 
 /* =========================================
+   CONTROLES DE ZOOM
+   ========================================= */
+.zoom-controls {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(93, 78, 55, 0.08);
+    border-radius: 8px;
+    padding: 2px 4px;
+}
+
+.zoom-btn {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--draw-bark);
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.zoom-btn:hover {
+    background: rgba(93, 78, 55, 0.15);
+}
+
+.zoom-btn:active {
+    transform: scale(0.95);
+}
+
+.zoom-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.zoom-btn.zoom-reset {
+    font-size: 0.85rem;
+    margin-left: 2px;
+}
+
+.zoom-level {
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: var(--draw-bark);
+    min-width: 36px;
+    text-align: center;
+    user-select: none;
+}
+
+/* Canvas container para zoom */
+.canvas-wrapper {
+    flex: 1;
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.02);
+}
+
+.canvas-wrapper.panning {
+    cursor: grab;
+}
+
+.canvas-wrapper.panning:active {
+    cursor: grabbing;
+}
+
+/* Hint de zoom */
+.zoom-hint {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.65rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+.canvas-wrapper:hover .zoom-hint {
+    opacity: 1;
+}
+
+/* Night mode zoom controls */
+body.night-mode .zoom-controls {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+body.night-mode .zoom-btn {
+    color: #ccc;
+}
+
+body.night-mode .zoom-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+body.night-mode .zoom-level {
+    color: #bbb;
+}
+
+/* =========================================
    GALERÍA DE DIBUJOS - SLIM
    ========================================= */
 .drawing-gallery {

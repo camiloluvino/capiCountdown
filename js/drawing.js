@@ -76,6 +76,17 @@ const DrawingApp = {
     // LocalStorage key
     storageKey: 'capi_drawings',
 
+    // Zoom state
+    zoom: 1,
+    minZoom: 0.5,
+    maxZoom: 4,
+    zoomStep: 0.25,
+    panX: 0,
+    panY: 0,
+    isPanning: false,
+    panStartX: 0,
+    panStartY: 0,
+
     // Initialize
     init() {
         // Get elements
@@ -98,6 +109,7 @@ const DrawingApp = {
         this.setupOverlayEvents();
         this.setupPaletteDropdowns();
         this.setupSizeDropdown();
+        this.setupZoomEvents();
 
         // Clean up old localStorage drawings (migrated to Firebase)
         this.cleanupLegacyDrawings();
@@ -108,6 +120,7 @@ const DrawingApp = {
         // NO guardar estado aquí - el canvas está oculto y tiene dimensiones 0x0
         // El estado inicial se guarda en initializeCanvas() cuando se abre el overlay
         this.updateToolUI();
+        this.updateZoomUI();
 
         console.log('🎨 Drawing App initialized with materials');
     },
@@ -191,13 +204,28 @@ const DrawingApp = {
         this.canvas.addEventListener('touchend', () => this.stopDrawing());
     },
 
-    // Get position relative to canvas
+    // Get position relative to canvas (accounting for zoom and pan)
     getPos(e) {
         const rect = this.canvas.getBoundingClientRect();
-        return {
-            x: (e.clientX - rect.left) * (this.canvas.width / rect.width),
-            y: (e.clientY - rect.top) * (this.canvas.height / rect.height)
-        };
+
+        // Posición del mouse relativa al canvas visual
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+
+        // Convertir a coordenadas del canvas interno (considerando zoom y pan)
+        // El canvas se escala desde el centro
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+
+        // Posición relativa al centro
+        const relX = mouseX - centerX;
+        const relY = mouseY - centerY;
+
+        // Aplicar inversa del zoom y pan
+        const canvasX = (relX / this.zoom - this.panX) + this.canvas.width / 2;
+        const canvasY = (relY / this.zoom - this.panY) + this.canvas.height / 2;
+
+        return { x: canvasX, y: canvasY };
     },
 
     // Start drawing
@@ -736,6 +764,13 @@ const DrawingApp = {
         this.overlay?.classList.add('active');
         document.getElementById('drawButton')?.classList.remove('has-new');
 
+        // Reset zoom when opening
+        this.zoom = 1;
+        this.panX = 0;
+        this.panY = 0;
+        this.applyTransform();
+        this.updateZoomUI();
+
         // Wait a frame for CSS to apply, then resize canvas
         requestAnimationFrame(() => {
             this.initializeCanvas();
@@ -1021,6 +1056,177 @@ const DrawingApp = {
         if (diff < 3600000) return Math.floor(diff / 60000) + ' min';
         if (diff < 86400000) return Math.floor(diff / 3600000) + ' h';
         return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+    },
+
+    // =========================================
+    // ZOOM FUNCTIONS
+    // =========================================
+
+    // Setup zoom event listeners
+    setupZoomEvents() {
+        // Zoom buttons
+        document.getElementById('zoom-in')?.addEventListener('click', () => this.zoomIn());
+        document.getElementById('zoom-out')?.addEventListener('click', () => this.zoomOut());
+        document.getElementById('zoom-reset')?.addEventListener('click', () => this.resetZoom());
+
+        // Mouse wheel zoom (with Ctrl key)
+        this.canvas?.addEventListener('wheel', (e) => {
+            if (e.ctrlKey || e.metaKey) {
+                e.preventDefault();
+                if (e.deltaY < 0) {
+                    this.zoomIn();
+                } else {
+                    this.zoomOut();
+                }
+            }
+        }, { passive: false });
+
+        // Space key for panning mode
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' && this.overlay?.classList.contains('active') && !this.isDrawing) {
+                e.preventDefault();
+                this.canvas.style.cursor = 'grab';
+                this.isPanning = true;
+            }
+        });
+
+        document.addEventListener('keyup', (e) => {
+            if (e.code === 'Space') {
+                this.canvas.style.cursor = 'crosshair';
+                this.isPanning = false;
+            }
+        });
+
+        // Pan with mouse when Space is held
+        this.canvas?.addEventListener('mousedown', (e) => {
+            if (this.isPanning && this.zoom > 1) {
+                e.preventDefault();
+                this.canvas.style.cursor = 'grabbing';
+                this.panStartX = e.clientX - this.panX * this.zoom;
+                this.panStartY = e.clientY - this.panY * this.zoom;
+
+                const onMouseMove = (moveEvent) => {
+                    this.panX = (moveEvent.clientX - this.panStartX) / this.zoom;
+                    this.panY = (moveEvent.clientY - this.panStartY) / this.zoom;
+                    this.applyTransform();
+                };
+
+                const onMouseUp = () => {
+                    this.canvas.style.cursor = this.isPanning ? 'grab' : 'crosshair';
+                    document.removeEventListener('mousemove', onMouseMove);
+                    document.removeEventListener('mouseup', onMouseUp);
+                };
+
+                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('mouseup', onMouseUp);
+            }
+        });
+
+        // Touch pinch zoom
+        let lastTouchDist = 0;
+        this.canvas?.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 2) {
+                e.preventDefault();
+                const dx = e.touches[0].clientX - e.touches[1].clientX;
+                const dy = e.touches[0].clientY - e.touches[1].clientY;
+                lastTouchDist = Math.sqrt(dx * dx + dy * dy);
+            }
+        }, { passive: false });
+
+        this.canvas?.addEventListener('touchmove', (e) => {
+            if (e.touches.length === 2) {
+                e.preventDefault();
+                const dx = e.touches[0].clientX - e.touches[1].clientX;
+                const dy = e.touches[0].clientY - e.touches[1].clientY;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+
+                if (lastTouchDist > 0) {
+                    const delta = dist - lastTouchDist;
+                    if (Math.abs(delta) > 10) {
+                        if (delta > 0) {
+                            this.zoomIn();
+                        } else {
+                            this.zoomOut();
+                        }
+                        lastTouchDist = dist;
+                    }
+                }
+            }
+        }, { passive: false });
+    },
+
+    // Zoom in
+    zoomIn() {
+        this.setZoom(this.zoom + this.zoomStep);
+    },
+
+    // Zoom out
+    zoomOut() {
+        this.setZoom(this.zoom - this.zoomStep);
+    },
+
+    // Reset zoom
+    resetZoom() {
+        this.zoom = 1;
+        this.panX = 0;
+        this.panY = 0;
+        this.applyTransform();
+        this.updateZoomUI();
+        console.log('🔍 Zoom reseteado a 100%');
+    },
+
+    // Set zoom level
+    setZoom(newZoom) {
+        const oldZoom = this.zoom;
+        this.zoom = Math.max(this.minZoom, Math.min(this.maxZoom, newZoom));
+
+        // Si reducimos el zoom, también reducir el pan proporcionalmente
+        if (this.zoom < oldZoom) {
+            const ratio = this.zoom / oldZoom;
+            this.panX *= ratio;
+            this.panY *= ratio;
+        }
+
+        // Si volvemos a zoom 1, resetear pan
+        if (this.zoom === 1) {
+            this.panX = 0;
+            this.panY = 0;
+        }
+
+        this.applyTransform();
+        this.updateZoomUI();
+    },
+
+    // Apply CSS transform for zoom and pan
+    applyTransform() {
+        if (!this.canvas) return;
+
+        // Limitar el pan para que no se salga mucho del visible
+        const maxPan = (this.zoom - 1) * (this.canvas.width / 2) / this.zoom;
+        this.panX = Math.max(-maxPan, Math.min(maxPan, this.panX));
+        this.panY = Math.max(-maxPan, Math.min(maxPan, this.panY));
+
+        this.canvas.style.transform = `scale(${this.zoom}) translate(${this.panX}px, ${this.panY}px)`;
+        this.canvas.style.transformOrigin = 'center center';
+    },
+
+    // Update zoom UI
+    updateZoomUI() {
+        const zoomLevel = document.getElementById('zoom-level');
+        if (zoomLevel) {
+            zoomLevel.textContent = Math.round(this.zoom * 100) + '%';
+        }
+
+        // Disable buttons at limits
+        const zoomInBtn = document.getElementById('zoom-in');
+        const zoomOutBtn = document.getElementById('zoom-out');
+
+        if (zoomInBtn) {
+            zoomInBtn.disabled = this.zoom >= this.maxZoom;
+        }
+        if (zoomOutBtn) {
+            zoomOutBtn.disabled = this.zoom <= this.minZoom;
+        }
     }
 };
 
