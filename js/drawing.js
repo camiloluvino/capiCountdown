@@ -26,7 +26,10 @@ const DrawingApp = {
     opacity: 1,
 
     // History for undo
-    history: [],
+    history: [], // Legacy history (images)
+    strokes: [], // New vector history (stroke objects)
+    currentStroke: null, // Current stroke being drawn
+    legacyBackgroundImage: null, // For legacy drawings background
     historyIndex: -1,
     maxHistory: 10,  // Reducido de 30 para ahorrar memoria (~100MB max vs ~300MB)
     isRestoring: false, // Previene clics rápidos en undo
@@ -242,36 +245,53 @@ const DrawingApp = {
         this.velocity = 0;
         this.smoothedVelocity = 0;
         this.pressure = 1;
-        this.points = [{ x: pos.x, y: pos.y, pressure: 1 }];
+
+        // Initialize new stroke
+        this.currentStroke = {
+            tool: this.currentTool,
+            material: this.currentMaterial,
+            color: this.currentColor,
+            size: this.lineWidth,
+            opacity: this.opacity,
+            points: [{ x: pos.x, y: pos.y, pressure: 1 }]
+        };
 
         // Initial dot based on material
         if (this.currentTool === 'eraser') {
-            this.ctx.beginPath();
-            this.ctx.arc(pos.x, pos.y, this.lineWidth, 0, Math.PI * 2);
-            this.ctx.fillStyle = '#FDFBF5';
-            this.ctx.fill();
+            const style = { size: this.lineWidth, color: '#FDFBF5' };
+            this.renderEraserDot(pos, style);
         } else if (this.currentMaterial === 'graphite') {
-            this.drawGraphiteDot(pos.x, pos.y);
+            const style = { size: this.lineWidth, color: this.currentColor };
+            this.renderGraphiteDot(pos, style);
         } else {
-            this.drawWatercolorDot(pos.x, pos.y);
+            const style = { size: this.lineWidth, color: this.currentColor };
+            this.renderWatercolorDot(pos, style);
         }
     },
 
+    // Render Eraser Dot
+    renderEraserDot(pos, style) {
+        this.ctx.beginPath();
+        this.ctx.arc(pos.x, pos.y, style.size, 0, Math.PI * 2);
+        this.ctx.fillStyle = '#FDFBF5';
+        this.ctx.fill();
+    },
+
     // Draw graphite dot (textured, granular)
-    drawGraphiteDot(x, y) {
-        const size = this.lineWidth;
-        const density = Math.max(8, size * 3); // More particles for larger sizes
+    renderGraphiteDot(pos, style) {
+        const size = style.size;
+        const density = Math.max(8, size * 3);
 
         for (let i = 0; i < density; i++) {
             const angle = Math.random() * Math.PI * 2;
             const radius = Math.random() * size * 0.6;
-            const px = x + Math.cos(angle) * radius;
-            const py = y + Math.sin(angle) * radius;
+            const px = pos.x + Math.cos(angle) * radius;
+            const py = pos.y + Math.sin(angle) * radius;
             const particleSize = Math.random() * 1.5 + 0.5;
 
             this.ctx.beginPath();
             this.ctx.arc(px, py, particleSize, 0, Math.PI * 2);
-            this.ctx.fillStyle = this.currentColor;
+            this.ctx.fillStyle = style.color;
             this.ctx.globalAlpha = 0.3 + Math.random() * 0.5;
             this.ctx.fill();
         }
@@ -279,20 +299,20 @@ const DrawingApp = {
     },
 
     // Draw watercolor dot (soft, diffuse)
-    drawWatercolorDot(x, y) {
-        const size = this.lineWidth * 1.5;
+    renderWatercolorDot(pos, style) {
+        const size = style.size * 1.5;
 
         // Multiple soft layers
         for (let layer = 3; layer >= 0; layer--) {
             const layerSize = size * (1 + layer * 0.3);
-            const gradient = this.ctx.createRadialGradient(x, y, 0, x, y, layerSize);
+            const gradient = this.ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, layerSize);
 
-            gradient.addColorStop(0, this.hexToRgba(this.currentColor, 0.15 - layer * 0.03));
-            gradient.addColorStop(0.5, this.hexToRgba(this.currentColor, 0.08 - layer * 0.02));
-            gradient.addColorStop(1, this.hexToRgba(this.currentColor, 0));
+            gradient.addColorStop(0, this.hexToRgba(style.color, 0.15 - layer * 0.03));
+            gradient.addColorStop(0.5, this.hexToRgba(style.color, 0.08 - layer * 0.02));
+            gradient.addColorStop(1, this.hexToRgba(style.color, 0));
 
             this.ctx.beginPath();
-            this.ctx.arc(x, y, layerSize, 0, Math.PI * 2);
+            this.ctx.arc(pos.x, pos.y, layerSize, 0, Math.PI * 2);
             this.ctx.fillStyle = gradient;
             this.ctx.fill();
         }
@@ -327,22 +347,29 @@ const DrawingApp = {
         this.smoothedVelocity = this.smoothedVelocity * 0.7 + this.velocity * 0.3;
 
         // Calculate simulated pressure from velocity
-        // Slow = high pressure (thick), Fast = low pressure (thin)
-        // Velocity typically ranges from 0 to ~2 pixels/ms
         const normalizedVelocity = Math.min(this.smoothedVelocity / 1.5, 1);
         this.pressure = 1 - normalizedVelocity * 0.7; // Range: 0.3 to 1.0
         this.pressure = Math.max(0.25, Math.min(1, this.pressure));
 
-        // Store point with pressure
-        this.points.push({ x: pos.x, y: pos.y, pressure: this.pressure });
-        if (this.points.length > 5) this.points.shift();
+        // Store point with pressure in the current stroke
+        if (this.currentStroke) {
+            this.currentStroke.points.push({ x: pos.x, y: pos.y, pressure: this.pressure });
+        }
+
+        // Prepare style object for renderers
+        const style = {
+            size: this.lineWidth,
+            color: this.currentColor,
+            pressure: this.pressure,
+            points: this.currentStroke ? this.currentStroke.points : []
+        };
 
         if (this.currentTool === 'eraser') {
-            this.drawEraser(pos);
+            this.renderEraserStroke({ x: this.lastX, y: this.lastY }, pos, style);
         } else if (this.currentMaterial === 'graphite') {
-            this.drawGraphiteStroke(pos);
+            this.renderGraphiteStroke({ x: this.lastX, y: this.lastY }, pos, style);
         } else {
-            this.drawWatercolorStroke(pos);
+            this.renderWatercolorStroke({ x: this.lastX, y: this.lastY }, pos, style);
         }
 
         this.lastX = pos.x;
@@ -351,52 +378,52 @@ const DrawingApp = {
     },
 
     // Eraser stroke
-    drawEraser(pos) {
+    renderEraserStroke(from, to, style) {
         this.ctx.globalCompositeOperation = 'source-over';
         this.ctx.strokeStyle = '#FDFBF5';
-        this.ctx.lineWidth = this.lineWidth * 2.5;
+        this.ctx.lineWidth = style.size * 2.5;
         this.ctx.lineCap = 'round';
         this.ctx.lineJoin = 'round';
         this.ctx.globalAlpha = 1;
 
         this.ctx.beginPath();
-        this.ctx.moveTo(this.lastX, this.lastY);
-        this.ctx.lineTo(pos.x, pos.y);
+        this.ctx.moveTo(from.x, from.y);
+        this.ctx.lineTo(to.x, to.y);
         this.ctx.stroke();
     },
 
     // GRAPHITE stroke: granular texture with pressure sensitivity
-    drawGraphiteStroke(pos) {
-        const dx = pos.x - this.lastX;
-        const dy = pos.y - this.lastY;
+    renderGraphiteStroke(from, to, style) {
+        const dx = to.x - from.x;
+        const dy = to.y - from.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
 
         if (distance < 1) return;
 
         // Pressure-based size and opacity
-        const pressureSize = this.lineWidth * (0.5 + this.pressure * 0.8);
-        const pressureOpacity = 0.3 + this.pressure * 0.5;
+        const pressureSize = style.size * (0.5 + style.pressure * 0.8);
+        const pressureOpacity = 0.3 + style.pressure * 0.5;
 
         // Draw base stroke with pressure-based width
         this.ctx.globalCompositeOperation = 'source-over';
-        this.ctx.strokeStyle = this.currentColor;
+        this.ctx.strokeStyle = style.color;
         this.ctx.lineWidth = pressureSize * 0.4;
         this.ctx.lineCap = 'round';
         this.ctx.globalAlpha = pressureOpacity * 0.3;
 
         this.ctx.beginPath();
-        this.ctx.moveTo(this.lastX, this.lastY);
-        this.ctx.lineTo(pos.x, pos.y);
+        this.ctx.moveTo(from.x, from.y);
+        this.ctx.lineTo(to.x, to.y);
         this.ctx.stroke();
 
         // More particles with higher pressure (slower = more density)
-        const steps = Math.max(1, Math.floor(distance / (3 - this.pressure * 1.5)));
-        const particlesPerStep = Math.max(2, Math.floor(pressureSize * 0.6 * (0.5 + this.pressure)));
+        const steps = Math.max(1, Math.floor(distance / (3 - style.pressure * 1.5)));
+        const particlesPerStep = Math.max(2, Math.floor(pressureSize * 0.6 * (0.5 + style.pressure)));
 
         for (let i = 0; i <= steps; i++) {
             const t = i / steps;
-            const x = this.lastX + dx * t;
-            const y = this.lastY + dy * t;
+            const x = from.x + dx * t;
+            const y = from.y + dy * t;
 
             // Irregular edge offset (more pronounced with higher pressure)
             const edgeIrregularity = (Math.random() - 0.5) * pressureSize * 0.15;
@@ -404,7 +431,7 @@ const DrawingApp = {
             for (let p = 0; p < particlesPerStep; p++) {
                 // Random offset within stroke width - more spread with less pressure
                 const angle = Math.random() * Math.PI * 2;
-                const spreadFactor = 0.3 + (1 - this.pressure) * 0.3;
+                const spreadFactor = 0.3 + (1 - style.pressure) * 0.3;
                 const spread = pressureSize * spreadFactor;
                 const offsetX = Math.cos(angle) * Math.random() * spread + edgeIrregularity;
                 const offsetY = Math.sin(angle) * Math.random() * spread + edgeIrregularity;
@@ -413,11 +440,11 @@ const DrawingApp = {
                 const particleY = y + offsetY;
 
                 // Particle size varies with pressure
-                const particleSize = (0.4 + Math.random() * 1.0) * (0.7 + this.pressure * 0.5);
+                const particleSize = (0.4 + Math.random() * 1.0) * (0.7 + style.pressure * 0.5);
 
                 this.ctx.beginPath();
                 this.ctx.arc(particleX, particleY, particleSize, 0, Math.PI * 2);
-                this.ctx.fillStyle = this.currentColor;
+                this.ctx.fillStyle = style.color;
                 // Variable opacity - higher when slow (more graphite deposited)
                 this.ctx.globalAlpha = (0.15 + Math.random() * 0.4) * pressureOpacity;
                 this.ctx.fill();
@@ -428,30 +455,28 @@ const DrawingApp = {
     },
 
     // WATERCOLOR stroke: soft, diffuse with pressure sensitivity
-    drawWatercolorStroke(pos) {
-        const dx = pos.x - this.lastX;
-        const dy = pos.y - this.lastY;
+    renderWatercolorStroke(from, to, style) {
+        const dx = to.x - from.x;
+        const dy = to.y - from.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
 
         if (distance < 1) return;
 
         // Pressure affects size and transparency
-        // Slow = more water = bigger spread, less concentrated
-        // Fast = less water = smaller, more concentrated
-        const pressureFactor = 0.6 + this.pressure * 0.6;
-        const baseSize = this.lineWidth * 1.5 * pressureFactor;
-        const baseAlpha = 0.08 + (1 - this.pressure) * 0.06; // More transparent when slow
+        const pressureFactor = 0.6 + style.pressure * 0.6;
+        const baseSize = style.size * 1.5 * pressureFactor;
+        const baseAlpha = 0.08 + (1 - style.pressure) * 0.06; // More transparent when slow
 
         // Draw overlapping soft circles along the path
-        const steps = Math.max(1, Math.floor(distance / (4 - this.pressure * 2)));
+        const steps = Math.max(1, Math.floor(distance / (4 - style.pressure * 2)));
 
         for (let i = 0; i <= steps; i++) {
             const t = i / steps;
-            const x = this.lastX + dx * t;
-            const y = this.lastY + dy * t;
+            const x = from.x + dx * t;
+            const y = from.y + dy * t;
 
-            // Organic wobble - more when slow (more water spreading)
-            const wobbleFactor = 0.15 + this.pressure * 0.15;
+            // Organic wobble
+            const wobbleFactor = 0.15 + style.pressure * 0.15;
             const wobbleX = (Math.random() - 0.5) * baseSize * wobbleFactor;
             const wobbleY = (Math.random() - 0.5) * baseSize * wobbleFactor;
 
@@ -465,11 +490,11 @@ const DrawingApp = {
                 x + wobbleX, y + wobbleY, thisSize
             );
 
-            // Watercolor gradient - more transparent at edges
-            gradient.addColorStop(0, this.hexToRgba(this.currentColor, baseAlpha * 1.5));
-            gradient.addColorStop(0.3, this.hexToRgba(this.currentColor, baseAlpha));
-            gradient.addColorStop(0.6, this.hexToRgba(this.currentColor, baseAlpha * 0.5));
-            gradient.addColorStop(1, this.hexToRgba(this.currentColor, 0));
+            // Watercolor gradient
+            gradient.addColorStop(0, this.hexToRgba(style.color, baseAlpha * 1.5));
+            gradient.addColorStop(0.3, this.hexToRgba(style.color, baseAlpha));
+            gradient.addColorStop(0.6, this.hexToRgba(style.color, baseAlpha * 0.5));
+            gradient.addColorStop(1, this.hexToRgba(style.color, 0));
 
             this.ctx.beginPath();
             this.ctx.arc(x + wobbleX, y + wobbleY, thisSize, 0, Math.PI * 2);
@@ -477,22 +502,22 @@ const DrawingApp = {
             this.ctx.fill();
         }
 
-        // Edge pooling effect - more frequent when moving slowly (more water)
-        const poolChance = 0.5 + this.pressure * 0.3;
+        // Edge pooling effect
+        const poolChance = 0.5 + style.pressure * 0.3;
         if (distance > 3 && Math.random() > poolChance) {
             const numPools = Math.floor(1 + Math.random() * 2);
             for (let p = 0; p < numPools; p++) {
-                const poolX = pos.x + (Math.random() - 0.5) * baseSize * 1.2;
-                const poolY = pos.y + (Math.random() - 0.5) * baseSize * 1.2;
+                const poolX = to.x + (Math.random() - 0.5) * baseSize * 1.2;
+                const poolY = to.y + (Math.random() - 0.5) * baseSize * 1.2;
                 const poolSize = baseSize * (0.2 + Math.random() * 0.3);
 
                 const poolGradient = this.ctx.createRadialGradient(
                     poolX, poolY, 0,
                     poolX, poolY, poolSize
                 );
-                poolGradient.addColorStop(0, this.hexToRgba(this.currentColor, baseAlpha * 2));
-                poolGradient.addColorStop(0.5, this.hexToRgba(this.currentColor, baseAlpha));
-                poolGradient.addColorStop(1, this.hexToRgba(this.currentColor, 0));
+                poolGradient.addColorStop(0, this.hexToRgba(style.color, baseAlpha * 2));
+                poolGradient.addColorStop(0.5, this.hexToRgba(style.color, baseAlpha));
+                poolGradient.addColorStop(1, this.hexToRgba(style.color, 0));
 
                 this.ctx.beginPath();
                 this.ctx.arc(poolX, poolY, poolSize, 0, Math.PI * 2);
@@ -507,76 +532,95 @@ const DrawingApp = {
     stopDrawing() {
         if (this.isDrawing) {
             this.isDrawing = false;
-            this.saveState();
+            if (this.currentStroke) {
+                // Simplify or clean stroke data if needed here
+                this.strokes.push(this.currentStroke);
+                this.currentStroke = null;
+                console.log(`🖊️ Trazo completado. Total trazos: ${this.strokes.length}`);
+            }
         }
     },
 
-    // Save state for undo
+    // Save state (Legacy support or secondary backup)
     saveState() {
-        if (!this.canvas) return;
-
-        // Remove any states after current index (for redo support in future)
-        this.history = this.history.slice(0, this.historyIndex + 1);
-
-        // Add current state
-        const dataUrl = this.canvas.toDataURL();
-        this.history.push(dataUrl);
-        this.historyIndex++;
-
-        // Limit history size
-        if (this.history.length > this.maxHistory) {
-            this.history.shift();
-            this.historyIndex--;
-        }
-
-        console.log(`📝 Estado guardado. Historial: ${this.history.length}, Índice: ${this.historyIndex}`);
+        // Disabled legacy saveState in favor of vector history
     },
 
-    // Undo
+    // Undo (Vector based)
     undo() {
-        console.log(`↩️ Undo llamado. Historial: ${this.history.length}, Índice actual: ${this.historyIndex}, Restaurando: ${this.isRestoring}`);
+        console.log(`↩️ Undo llamado. Trazos actuales: ${this.strokes.length}`);
 
-        // Prevenir clics rápidos mientras se restaura
-        if (this.isRestoring) {
-            console.log('⏳ Esperando restauración anterior...');
-            return;
-        }
-
-        if (this.historyIndex > 0) {
-            this.historyIndex--;
-            console.log(`↩️ Restaurando al índice: ${this.historyIndex}`);
-            this.restoreState();
+        if (this.strokes.length > 0) {
+            this.strokes.pop(); // Remove last stroke
+            this.redrawAll();
         } else {
-            console.log('↩️ No hay más estados para deshacer (ya estás en el estado inicial)');
+            console.log('↩️ No hay más trazos para deshacer');
         }
     },
 
-    // Restore from history
-    restoreState() {
-        if (this.historyIndex < 0 || this.historyIndex >= this.history.length) {
-            console.error('❌ Índice de historial inválido:', this.historyIndex);
-            return;
+    // Redraw all strokes from scratch
+    redrawAll() {
+        const w = this.baseWidth || this.canvas.width;
+        const h = this.baseHeight || this.canvas.height;
+
+        // Clear canvas
+        this.ctx.fillStyle = '#FDFBF5';
+        this.ctx.fillRect(0, 0, w, h);
+
+        // Draw legacy background if exists
+        if (this.legacyBackgroundImage) {
+            this.ctx.drawImage(this.legacyBackgroundImage, 0, 0, w, h);
         }
 
-        this.isRestoring = true;
-        const dataUrl = this.history[this.historyIndex];
-        console.log(`🔄 Restaurando estado ${this.historyIndex}...`);
+        console.log(`🔄 Redibujando ${this.strokes.length} trazos...`);
 
-        const img = new Image();
-        img.onload = () => {
-            // Usar baseWidth/baseHeight porque el contexto está escalado
-            const w = this.baseWidth || this.canvas.width;
-            const h = this.baseHeight || this.canvas.height;
-            this.ctx.clearRect(0, 0, w, h);
-            this.ctx.drawImage(img, 0, 0, w, h);
-            this.isRestoring = false;
-            console.log('✅ Estado restaurado correctamente');
-        };
-        img.onerror = () => {
-            this.isRestoring = false;
-            console.error('❌ Error cargando imagen del historial');
-        };
-        img.src = dataUrl;
+        // Replay strokes
+        this.strokes.forEach(stroke => {
+            if (!stroke.points || stroke.points.length === 0) return;
+
+            // Initial dot
+            const firstPoint = stroke.points[0];
+            const style = {
+                size: stroke.size,
+                color: stroke.color,
+                pressure: 1 // Default start pressure
+            };
+
+            if (stroke.tool === 'eraser') {
+                this.renderEraserDot(firstPoint, style);
+            } else if (stroke.material === 'graphite') {
+                this.renderGraphiteDot(firstPoint, style);
+            } else {
+                this.renderWatercolorDot(firstPoint, style);
+            }
+
+            // Segments
+            if (stroke.points.length > 1) {
+                for (let i = 1; i < stroke.points.length; i++) {
+                    const from = stroke.points[i - 1];
+                    const to = stroke.points[i];
+
+                    const segmentStyle = {
+                        size: stroke.size,
+                        color: stroke.color,
+                        pressure: to.pressure
+                    };
+
+                    if (stroke.tool === 'eraser') {
+                        this.renderEraserStroke(from, to, segmentStyle);
+                    } else if (stroke.material === 'graphite') {
+                        this.renderGraphiteStroke(from, to, segmentStyle);
+                    } else {
+                        this.renderWatercolorStroke(from, to, segmentStyle);
+                    }
+                }
+            }
+        });
+    },
+
+    // Restore from history - Legacy support wrapper
+    restoreState() {
+        // No-op or legacy handler if needed
     },
 
     // Clear canvas
@@ -586,6 +630,12 @@ const DrawingApp = {
         const h = this.baseHeight || this.canvas.height;
         this.ctx.fillStyle = '#FDFBF5';
         this.ctx.fillRect(0, 0, w, h);
+
+        // Reset strokes
+        this.strokes = [];
+        this.currentStroke = null;
+        this.legacyBackgroundImage = null;
+
         this.saveState();
     },
 
@@ -864,6 +914,8 @@ const DrawingApp = {
     // Resetear historial y guardar estado inicial limpio
     resetHistory() {
         this.history = [];
+        this.strokes = []; // Clear vector history
+        this.currentStroke = null;
         this.historyIndex = -1;
 
         // Asegurar fondo blanco (usar baseWidth/baseHeight porque ctx está escalado)
@@ -897,15 +949,23 @@ const DrawingApp = {
             const db = firebase.database();
             const drawingId = 'drawing_' + Date.now();
 
-            // Create new drawing entry
-            const newDrawing = {
+            // 1. Save Metadata + Thumbnail (Lightweight)
+            const drawingMeta = {
                 id: drawingId,
-                imageData: this.canvas.toDataURL('image/png'),
+                imageData: this.canvas.toDataURL('image/png'), // Thumbnail (full res for now, but conceptually thumbnail)
                 timestamp: firebase.database.ServerValue.TIMESTAMP
             };
 
-            // Save to Firebase
-            db.ref('drawings/' + drawingId).set(newDrawing)
+            // 2. Save Stroke Data (Heavy)
+            const drawingData = {
+                strokes: this.strokes
+            };
+
+            // Perform both writes
+            Promise.all([
+                db.ref('drawings/' + drawingId).set(drawingMeta),
+                db.ref('drawings_data/' + drawingId).set(drawingData)
+            ])
                 .then(() => {
                     // Clear canvas after saving
                     this.clearCanvas();
@@ -919,7 +979,7 @@ const DrawingApp = {
                         }, 1500);
                     }
 
-                    console.log('🎨 Dibujo guardado en Firebase');
+                    console.log('🎨 Dibujo guardado en Firebase (Meta + Data)');
                 })
                 .catch((error) => {
                     console.error('Error guardando en Firebase:', error);
@@ -1026,16 +1086,78 @@ const DrawingApp = {
         gallery.appendChild(item);
     },
 
-    // View drawing in modal
+    // View drawing in modal or edit mode
     viewDrawing(drawing) {
-        const modal = document.getElementById('drawing-modal');
-        const modalImg = document.getElementById('modalDrawingImg');
+        // Check if we want to edit or view. For now, we open in the main editor.
+        // But the previous implementation opened a modal.
+        // Let's modify behavior: Open in the main editor to allow editing.
 
-        if (modal && modalImg) {
-            modalImg.src = drawing.imageData;
-            modal.dataset.currentId = drawing.id;
-            modal.classList.add('active');
+        const openInEditor = confirm("¿Quieres editar este dibujo? (Aceptar) o solo verlo (Cancelar)");
+
+        if (openInEditor) {
+            this.loadDrawingIntoEditor(drawing);
+        } else {
+            // Legacy Modal View
+            const modal = document.getElementById('drawing-modal');
+            const modalImg = document.getElementById('modalDrawingImg');
+
+            if (modal && modalImg) {
+                modalImg.src = drawing.imageData;
+                modal.dataset.currentId = drawing.id;
+                modal.classList.add('active');
+            }
         }
+    },
+
+    // Load drawing data into editor
+    loadDrawingIntoEditor(drawing) {
+        if (typeof firebase === 'undefined' || !firebase.database) {
+            alert('Error: Firebase no conectado');
+            return;
+        }
+
+        console.log(`📥 Cargando dibujo ${drawing.id}...`);
+
+        // Open the editor overlay first
+        this.open();
+
+        // Show loading state/cursor
+        document.body.style.cursor = 'wait';
+
+        // Fetch stroke data
+        firebase.database().ref('drawings_data/' + drawing.id).once('value')
+            .then(snapshot => {
+                const data = snapshot.val();
+
+                if (data && data.strokes) {
+                    console.log(`✅ Datos vectoriales encontrados: ${data.strokes.length} trazos`);
+                    this.strokes = data.strokes;
+                    this.legacyBackgroundImage = null; // Clear legacy if exists
+                    this.redrawAll();
+                } else {
+                    console.log('⚠️ Sin datos vectoriales (Dibujo Legacy). Cargando imagen de fondo...');
+                    // Legacy fallback: Load image as background
+                    this.strokes = [];
+
+                    const img = new Image();
+                    img.onload = () => {
+                        const w = this.baseWidth || this.canvas.width;
+                        const h = this.baseHeight || this.canvas.height;
+
+                        // Store as persistent background for undo
+                        this.legacyBackgroundImage = img;
+
+                        this.ctx.drawImage(img, 0, 0, w, h);
+                    };
+                    img.src = drawing.imageData;
+                }
+                document.body.style.cursor = 'default';
+            })
+            .catch(err => {
+                console.error("Error loading drawing data:", err);
+                document.body.style.cursor = 'default';
+                alert("Error al cargar los datos del dibujo.");
+            });
     },
 
     // Delete drawing from Firebase

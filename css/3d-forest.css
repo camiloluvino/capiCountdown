@@ -516,8 +516,8 @@ body.night-mode #forest-ground {
     font-weight: bold;
     font-size: 1rem;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    display: none;
-    /* Hidden by default */
+    display: block;
+    /* Visible by default */
     transition: transform 0.2s, box-shadow 0.2s;
 }
 
