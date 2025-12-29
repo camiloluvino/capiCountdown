@@ -221,7 +221,7 @@ const zenMessages = [
     "Ya casi puedes saborearlo.",
     "Tranquilidad y buenos alimentos.",
     "El futuro se construye hoy.",
-    "Nada es eterno, ni siquiera la espera.",
+    "Cada día sin ti es un día más cerca de verte.",
     "Sonríe, el tiempo está de tu lado.",
     "La mejor compañía es la calma.",
     "Observa cómo pasan las nubes.",
@@ -489,6 +489,12 @@ function updateAll(date) {
 
     renderTally(days, shouldAnimate);
     updateCapybaraMood(days);
+
+    // Actualizar contador de días restantes
+    const daysCounterEl = document.getElementById('daysCounter');
+    if (daysCounterEl) {
+        daysCounterEl.textContent = days;
+    }
 
     previousDaysLeft = days;
 

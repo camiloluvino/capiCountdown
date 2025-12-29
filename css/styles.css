@@ -477,6 +477,151 @@ body.night-mode .message-box::after {
     border-color: transparent transparent rgba(42, 42, 62, 0.4) transparent;
 }
 
+/* Days Counter Display */
+.days-counter-display {
+    margin-top: 35px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    animation: fadeInUp 0.8s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.days-counter-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 25px 45px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.4));
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 2px solid rgba(230, 165, 126, 0.3);
+    border-radius: 30px;
+    box-shadow: 
+        0 8px 32px rgba(230, 165, 126, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    position: relative;
+    overflow: hidden;
+}
+
+.days-counter-inner::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(230, 165, 126, 0.1) 0%, transparent 60%);
+    animation: shimmer 4s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+    0%, 100% {
+        transform: translate(-30%, -30%);
+    }
+    50% {
+        transform: translate(30%, 30%);
+    }
+}
+
+.days-counter-number {
+    font-family: 'Outfit', sans-serif;
+    font-size: 4.5rem;
+    font-weight: 600;
+    background: linear-gradient(135deg, var(--accent-color), #E88B5C, var(--bamboo-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+    position: relative;
+    text-shadow: none;
+}
+
+.days-counter-label {
+    font-family: 'Lora', serif;
+    font-style: italic;
+    font-size: 1.1rem;
+    color: var(--text-color);
+    opacity: 0.85;
+    margin-top: 5px;
+}
+
+.days-counter-decoration {
+    display: flex;
+    gap: 15px;
+    font-size: 1.3rem;
+}
+
+.deco-heart, .deco-star {
+    animation: pulse 2s ease-in-out infinite;
+    font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
+}
+
+.deco-heart:first-child {
+    animation-delay: 0s;
+}
+
+.deco-star {
+    animation-delay: 0.5s;
+}
+
+.deco-heart:last-child {
+    animation-delay: 1s;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+    50% {
+        transform: scale(1.15);
+        opacity: 1;
+    }
+}
+
+/* Night mode variant */
+body.night-mode .days-counter-inner {
+    background: linear-gradient(135deg, rgba(42, 42, 62, 0.7), rgba(42, 42, 62, 0.4));
+    border-color: rgba(162, 213, 162, 0.2);
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+body.night-mode .days-counter-number {
+    background: linear-gradient(135deg, #a2d5a2, #7BAE7F, #E6A57E);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+body.night-mode .days-counter-label {
+    color: #e0e0e0;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .days-counter-number {
+        font-size: 3.5rem;
+    }
+    
+    .days-counter-inner {
+        padding: 20px 35px;
+    }
+}
+
 /* Feeding Menu */
 .feeding-menu {
     position: fixed;
