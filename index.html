@@ -2,13 +2,13 @@
     ============================================
     CAPI COUNTDOWN - Contador Capibara
     ============================================
-    Versión: 1.5.1
-    Fecha: 2025-12-29
-    Hora: 16:22 (UTC-3 Chile)
+    Versión: 1.6.0
+    Fecha: 2026-02-11
+    Hora: 22:45 (UTC-3 Chile)
     Cambios:
-      - 🎨 Sistema de dibujo vectorial (ahora son editables después de guardar)
-      - 🔧 Refactorización de drawing.js para soportar trazos vs píxeles
-      - ☁️ Actualización de esquema Firebase (metadata vs data)
+      - 🌳 Nuevo Contador Árbol Zen (reemplaza palos de bambú)
+      - 📅 Actualizada fecha objetivo a 5 de Marzo 2026
+      - ✨ Archivo de código antiguo en js/archive/
     ============================================
 -->
 <!DOCTYPE html>
@@ -111,8 +111,10 @@
         <div class="food-item" onclick="feedCapybara('🍎')">🍎</div>
     </div>
 
-    <h1>Cuenta Regresiva Capibara</h1>
-    <!-- Subtitle removed -->
+    <!-- Tree Countdown -->
+    <div id="tree-container" class="zen-container" style="text-align: center; margin-top: 30px;">
+        <canvas id="tree-canvas"></canvas>
+    </div>
 
     <div class="capybara-container">
         <img src="assets/images/capybara.webp" alt="Capibara Zen" class="capybara-img" id="capyImage">
@@ -125,22 +127,14 @@
         ...
     </div>
 
-    <!-- Days Counter Display -->
+    <!-- Days Counter Display (Archived — kept for reference)
     <div class="days-counter-display">
         <div class="days-counter-inner">
             <span class="days-counter-number" id="daysCounter">...</span>
             <span class="days-counter-label">días para vernos</span>
         </div>
-        <div class="days-counter-decoration">
-            <span class="deco-heart">💕</span>
-            <span class="deco-star">✨</span>
-            <span class="deco-heart">💕</span>
-        </div>
     </div>
-
-    <div class="counter-container" id="counter">
-        <!-- Bundles generated here -->
-    </div>
+    -->
 
     <!-- Days text removed -->
 
@@ -387,6 +381,7 @@
     <!-- Utilities (debe cargarse primero) -->
     <script src="js/utils.js?v=1.3.1"></script>
     <script src="js/config.js?v=1.3.1"></script>
+    <script src="js/tree-countdown.js?v=1.0.0"></script>
 
     <script src="js/3d-forest.js?v=1.3.1"></script>
     <script src="js/script.js?v=1.3.1"></script>

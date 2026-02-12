@@ -34,9 +34,10 @@ const start3dBtn = document.getElementById('start-3d-btn');
 if (notesButton) {
     notesButton.addEventListener('click', () => {
         // Instead of showing the 2D overlay, we go straight to 3D
-        // Initialize if not ready
-        if (window.init3DForest && !document.getElementById('forest-viewport').innerHTML) {
+        // Initialize if not ready (robust init: don't rely on innerHTML state)
+        if (window.init3DForest && !window.__forestInitialized) {
             window.init3DForest();
+            window.__forestInitialized = true;
         }
 
         // Populate 3D forest with current notes
@@ -183,7 +184,7 @@ function renderMessage(data) {
 // escapeHtml() ahora se carga desde utils.js
 
 // Configuration - Usamos AppConfig desde config.js
-const targetDate = window.AppConfig?.targetDate || new Date('2026-01-28T00:00:00');
+const targetDate = window.AppConfig?.targetDate || new Date('2026-03-05T00:00:00');
 const images = window.AppConfig?.capybaraImages || [];
 const turtleImages = window.AppConfig?.turtleImages || [];
 
@@ -196,7 +197,7 @@ const zenMessages = [
     "Todo llega a su debido tiempo.",
     "Un día más, un día menos.",
     "La espera es parte del proceso.",
-    "El 28 se acerca sin prisa pero sin pausa.",
+    "El reencuentro se acerca sin prisa pero sin pausa.",
     "Guardando energía para el gran día.",
     "Paciencia: el arte de dejar que el tiempo pase.",
     "Solo es cuestión de tiempo.",
@@ -215,7 +216,7 @@ const zenMessages = [
     "La calma antes de la celebración.",
     "Preparando motores...",
     "Siente la brisa de la espera.",
-    "Mantén la visión en el 28.",
+    "Mantén la visión en el objetivo.",
     "Pequeños pasos, grandes distancias.",
     "La espera construye el carácter.",
     "Ya casi puedes saborearlo.",
@@ -225,7 +226,7 @@ const zenMessages = [
     "Sonríe, el tiempo está de tu lado.",
     "La mejor compañía es la calma.",
     "Observa cómo pasan las nubes.",
-    "El 28 brillará más que nunca."
+    "El día del reencuentro brillará más que nunca."
 ];
 
 // Turtle messages (wise, contemplative, philosophical)
@@ -245,7 +246,7 @@ const turtleMessages = [
     "La contemplación es el sendero.",
     "Lento pero constante, así se llega.",
     "El tiempo es el maestro más antiguo.",
-    "Respira profundo, el 28 está escrito.",
+    "Respira profundo, el destino está escrito.",
     "La serenidad es tu mayor fortaleza.",
     "Observa el horizonte sin ansiedad.",
     "La espera es meditación en movimiento.",
@@ -415,69 +416,18 @@ function updateCapybaraMood(daysLeft) {
     }, 300);
 }
 
+// --- LEGACY COUNTDOWN ARCHIVED ---
+// The bamboo tally logic was moved to js/archive/legacy_countdown.js
+// Replaced by Tree Countdown on Feb 11, 2026
+
 function renderTally(days, animateRemoval = false) {
-    const container = document.getElementById('counter');
-
-    // Simplified "Visual" Trick:
-    // Just render the new state. The user sees the count drop.
-    // To make it cooler, let's try to render the "falling" stick.
-
-    container.innerHTML = '';
-
-    const bundles = Math.floor(days / 5);
-    const remainder = days % 5;
-
-    // Render full bundles
-    for (let i = 0; i < bundles; i++) {
-        createBundle(5, true, container);
+    // Safe adapter: delegates to Tree Countdown
+    if (window.renderTree) {
+        window.renderTree(days);
     }
-
-    // Render remainder
-    if (remainder > 0) {
-        createBundle(remainder, false, container);
-    }
-
-    // If we want to show a falling stick (the one that just vanished)
-    if (animateRemoval) {
-        const fallingStick = document.createElement('div');
-        fallingStick.className = 'stick falling';
-        fallingStick.style.height = '60px'; // Approximate bundle height
-        fallingStick.style.width = '8px';
-        fallingStick.style.marginLeft = '10px';
-        container.appendChild(fallingStick);
-    }
-
-    // document.getElementById('daysText').innerText = `Faltan ${days} días`;
 }
 
-function createBundle(count, isCompleted, parent) {
-    const bundle = document.createElement('div');
-    bundle.className = 'bundle';
-    if (isCompleted) bundle.classList.add('completed');
-
-    const verticalCount = isCompleted ? 4 : count;
-
-    for (let i = 0; i < 4; i++) {
-        const stick = document.createElement('div');
-        stick.className = 'stick';
-        if (i >= verticalCount) {
-            stick.style.opacity = '0';
-        }
-        bundle.appendChild(stick);
-    }
-
-    if (isCompleted) {
-        const diagonal = document.createElement('div');
-        diagonal.className = 'stick diagonal';
-        bundle.appendChild(diagonal);
-
-        const yuzu = document.createElement('div');
-        yuzu.className = 'yuzu';
-        bundle.appendChild(yuzu);
-    }
-
-    parent.appendChild(bundle);
-}
+// createBundle removed — archived in js/archive/legacy_countdown.js
 
 // --- Logic & Events ---
 
@@ -489,12 +439,6 @@ function updateAll(date) {
 
     renderTally(days, shouldAnimate);
     updateCapybaraMood(days);
-
-    // Actualizar contador de días restantes
-    const daysCounterEl = document.getElementById('daysCounter');
-    if (daysCounterEl) {
-        daysCounterEl.textContent = days;
-    }
 
     previousDaysLeft = days;
 

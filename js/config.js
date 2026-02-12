@@ -8,8 +8,18 @@ const AppConfig = {
     // Versión de la app
     version: '1.3.1',
 
-    // Fecha objetivo del countdown
-    targetDate: new Date('2026-01-28T00:00:00'),
+    // Fecha objetivo del countdown (Reencuentro)
+    targetDate: new Date('2026-03-05T00:00:00'),
+
+    // Fecha de inicio (Primer día de distancia)
+    startDate: new Date('2026-02-12T00:00:00'),
+
+    // Configuración del Árbol Zen
+    tree: {
+        totalLeaves: 21,
+        trunkColor: '#5D4E37',
+        leafColors: ['#8FBC8F', '#A2D5A2', '#7BAE7F', '#B5CC8E', '#C4D7A4']
+    },
 
     // Imágenes del capibara
     capybaraImages: [
