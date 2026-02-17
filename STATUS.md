@@ -1,9 +1,9 @@
 # Status - CapiCountdown 📊
 
-> Última actualización: 2025-12-29
+> Última actualización: 2026-02-17
 
 ## Versión Actual
-**v1.4.1** (según `index.html`)
+**v1.5.0** (Tree Visual Upgrade)
 
 ⚠️ Nota: Las versiones están desincronizadas entre archivos. Ver AI_INSTRUCTIONS.md para detalles.
 
@@ -12,7 +12,8 @@
 ### ✅ Funcionando
 | Funcionalidad | Estado | Notas |
 |---------------|--------|-------|
-| Countdown principal | ✅ Estable | Cuenta hacia 28-Ene-2026 |
+| Countdown principal (Árbol) | ✅ Estable | Mejora visual v1.5 + Auto-fit |
+| Contador de días (Tally) | ✅ Estable | Restaurado (grupos de 5) |
 | Modo día/noche | ✅ Estable | Toggle manual |
 | Notas compartidas (Firebase) | ✅ Estable | CRUD completo |
 | Bosque 3D de notas | ✅ Estable | Navegación con scroll/swipe |
@@ -31,6 +32,7 @@
 
 | Fecha | Versión | Cambios |
 |-------|---------|---------|
+| 2026-02-17 | 1.5.0 | Árbol más realista (corteza, tamaño), auto-fit, y restauración de contador tally |
 | 2025-12-29 | 1.4.1 | Contador de días restantes añadido |
 | 2025-12-22 | 1.4.0 | Bosque 3D restaurado, limpieza de build |
 

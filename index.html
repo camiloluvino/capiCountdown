@@ -2,13 +2,13 @@
     ============================================
     CAPI COUNTDOWN - Contador Capibara
     ============================================
-    Versión: 1.6.0
-    Fecha: 2026-02-11
-    Hora: 22:45 (UTC-3 Chile)
+    Versión: 1.5.0
+    Fecha: 2026-02-17
+    Hora: 02:22 (UTC-3 Chile)
     Cambios:
-      - 🌳 Nuevo Contador Árbol Zen (reemplaza palos de bambú)
+      - 🌳 Mejora visual del Árbol (textura, tamaño, auto-fit)
+      - 🎋 Restaurado contador de palitos de bambú (tally)
       - 📅 Actualizada fecha objetivo a 5 de Marzo 2026
-      - ✨ Archivo de código antiguo en js/archive/
     ============================================
 -->
 <!DOCTYPE html>
@@ -115,6 +115,9 @@
     <div id="tree-container" class="zen-container" style="text-align: center; margin-top: 30px;">
         <canvas id="tree-canvas"></canvas>
     </div>
+
+    <!-- Tally Day Counter (groups of 5) -->
+    <div class="counter-container" id="counter"></div>
 
     <div class="capybara-container">
         <img src="assets/images/capybara.webp" alt="Capibara Zen" class="capybara-img" id="capyImage">
